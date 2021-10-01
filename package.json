@@ -1,6 +1,6 @@
 {
   "name": "meatbag-music-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Test bot",
   "main": "index.js",
   "scripts": {
