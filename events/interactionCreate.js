@@ -14,12 +14,25 @@ module.exports = {
                 console.error(error);
                 await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
             }
-        } else if (interaction.isButton()) {
+        }
+        if (interaction.isButton()) {
             if (interaction.customId === 'poggers') {
                 await interaction.update({ content: 'A button was clicked', components: [] });
                 // await interaction.delete();
             }
             // console.log(interaction);
+        }
+        if (interaction.isContextMenu()) {
+            const command = client.commands.get(interaction.commandName);
+
+            if (!command) return;
+
+            try {
+                await command.execute(interaction);
+            } catch(error) {
+                console.error(error);
+                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            }
         }
 	},
 };
