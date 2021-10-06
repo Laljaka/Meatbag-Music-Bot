@@ -17,10 +17,10 @@ module.exports = {
         }
         if (interaction.isButton()) {
             if (interaction.customId === 'poggers') {
-                await interaction.update({ content: 'A button was clicked', components: [] });
-                // await interaction.delete();
+                await interaction.reply({ content: 'You clicked Poggers', ephemeral: true});
+            } else if (interaction.customId === 'loggers') {
+                await interaction.reply({ content: 'You clicked Loggers', ephemeral: true});
             }
-            // console.log(interaction);
         }
         if (interaction.isContextMenu()) {
             const command = client.commands.get(interaction.commandName);
@@ -31,7 +31,7 @@ module.exports = {
                 await command.execute(interaction);
             } catch(error) {
                 console.error(error);
-                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+                await interaction.reply({ content: 'There was an error while executing context menu!', ephemeral: true });
             }
         }
 	},
