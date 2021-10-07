@@ -1,8 +1,10 @@
-const { joinVoiceChannel, createAudioResource, createAudioPlayer, getVoiceConnection, demuxProbe, StreamType } = require('@discordjs/voice');
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { Interaction, DataResolver } = require('discord.js');
+const { Interaction, MessageEmbed } = require('discord.js');
 const ytdl = require('youtube-dl-exec');
-const { MusicSubscription } = require('./music/subscription');
+const { getInfo } = require('ytdl-core');
+const fs = require('fs');
+const test = 'test';
+const playerController = require('./music/playerController');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -38,28 +40,43 @@ module.exports = {
         const string = interaction.options.getString('input');
         const channel = interaction.member.voice.channel;
 
-        const process = ytdl.raw(
-            string,
-            {
-                o: '-',
-                q: '',
-                f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-                r: '100K',
-            },
-            { stdio: ['ignore', 'pipe', 'ignore'] },
-        );
+        // const process = ytdl.raw(
+        //     string,
+        //     {
+        //         o: '-',
+        //         q: '',
+        //         // v: '',
+        //         f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+        //         r: '100K',
+        //         cookies: 'F:\\NEWPAPAKA\\repo\\Meatbag-Music-Bot\\cookies.txt',
+        //         // addHeader: 'LOGIN_INFO:AFmmF2swRAIgIbuQIwapdUb4Kbzr2Zs3DSGpTl_gaVzgfQlBPt2LEBMCIHoKroAOTCzOZj2-0kwWLuCVZT8m8E9hX3MlMC_ibVLS:QUQ3MjNmekZZU0YzWktkYU5mR2N3VXBTNDNUM2VQWWtIQ0g0RDB0WnljLTF5SG1jdnVweldSQmZhSWlHU0loWllhOVVaX2lsRThiR3ZaMGZwZTd5eDhVZ1dSOUY3RmlzRGFxN0pETFhqWl9zLTZmbXF6eUEwVzJYNkVtZWRWMWNiOEtsVjJFc1lQY0RXcjZFTlhIbjk4aUNNVjdpMjZIM0ZZTUZ3MUJlM05aV0QzRDdxS3QxM2NZ',
+        //     },
+        //      { stdio: ['ignore', 'pipe', 'ignore'] },
+        // );
+
+        // process.stderr.pipe(fs.createWriteStream('stderr.txt'));
         // const { stream, type } = await demuxProbe(process.stdout);
-        const stream = process.stdout;
-        const resource = createAudioResource(stream, { inputType: StreamType.WebmOpus });
+        // const stream = process.stdout;
+        // const resource = createAudioResource(stream, { inputType: StreamType.WebmOpus });
         
-        let subscription = new MusicSubscription(
-            joinVoiceChannel({
-                channelId: channel.id,
-                guildId: channel.guild.id,
-                adapterCreator: channel.guild.voiceAdapterCreator,
-            }),
-        );
-        subscription.audioPlayer.play(resource);
-        await interaction.reply('Joined the vice channel')
+        // subscription.audioPlayer.play(resource);
+        // const info = await getInfo(string);
+        await playerController.play(string, channel);
+        const info = await ytdl(string, {
+            dumpSingleJson: true,
+            noWarnings: true,
+            noCallHome: true,
+            noCheckCertificate: true,
+            preferFreeFormats: true,
+            youtubeSkipDashManifest: true,
+            cookies: 'F:\\NEWPAPAKA\\repo\\Meatbag-Music-Bot\\cookies.txt',
+        })
+        const embed = new MessageEmbed()
+            .setColor('DARK_GREEN')
+            .setTitle('Now playing')
+            .setThumbnail(info.thumbnails[3].url)
+            .setDescription(`[${info.title}](${info.webpage_url})`);
+            // .addField('Now playing', `[${info.videoDetails.title}](${info.videoDetails.video_url})`);
+        await interaction.reply({ embeds: [embed] })
     }
 }
