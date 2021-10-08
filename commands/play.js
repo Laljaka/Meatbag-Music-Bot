@@ -19,7 +19,9 @@ module.exports = {
          * @param {Interaction} interaction 
          */
     async execute(interaction) {
+        console.time('interaction')
         if (!interaction.member.voice.channelId) return await interaction.reply('You need to be in te voice chat to use this command');
+        await interaction.deferReply();
         // var connection = getVoiceConnection(interaction.guildId);
         // if (!connection) {
         //         connection = joinVoiceChannel({
@@ -38,7 +40,6 @@ module.exports = {
         // connection.subscribe(player);
         // player.play(resource);
         const string = interaction.options.getString('input');
-        const channel = interaction.member.voice.channel;
 
         // const process = ytdl.raw(
         //     string,
@@ -61,22 +62,7 @@ module.exports = {
         
         // subscription.audioPlayer.play(resource);
         // const info = await getInfo(string);
-        await playerController.play(string, channel);
-        const info = await ytdl(string, {
-            dumpSingleJson: true,
-            noWarnings: true,
-            noCallHome: true,
-            noCheckCertificate: true,
-            preferFreeFormats: true,
-            youtubeSkipDashManifest: true,
-            cookies: 'F:\\NEWPAPAKA\\repo\\Meatbag-Music-Bot\\cookies.txt',
-        })
-        const embed = new MessageEmbed()
-            .setColor('DARK_GREEN')
-            .setTitle('Now playing')
-            .setThumbnail(info.thumbnails[3].url)
-            .setDescription(`[${info.title}](${info.webpage_url})`);
-            // .addField('Now playing', `[${info.videoDetails.title}](${info.videoDetails.video_url})`);
-        await interaction.reply({ embeds: [embed] })
+        console.timeEnd('interaction')
+        await playerController.play(string, interaction);
     }
 }

@@ -106,3 +106,4 @@ dist
 .eslintrc.json
 cookies.txt
 stderr.txt
+stdout.txt
