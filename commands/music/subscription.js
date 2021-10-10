@@ -12,6 +12,7 @@ const {
 } = require('@discordjs/voice');
 const { Client, MessageEmbed } = require('discord.js');
 const ytdl = require('youtube-dl-exec');
+const ytdlc = require('ytdl-core');
 const { Track } = require('./track');
 
 class MusicSubscription {
@@ -50,6 +51,8 @@ class MusicSubscription {
                 }
             } else if (newState.status === VoiceConnectionStatus.Destroyed) {
                 // TODO this.stop()
+                this.stop();
+                console.log('destroyed');
             } else if (!this.readyLock && (newState.status === VoiceConnectionStatus.Connecting || newState.status === VoiceConnectionStatus.Signalling)) {
                 this.readyLock = true;
                 try {
@@ -65,11 +68,13 @@ class MusicSubscription {
         this.audioPlayer.on('stateChange', async (oldState, newState) => {
             if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
                 // TODO start playing a new track
+                this.currentlyPlaying = null;
                 this.isPlaying = false;
                 await this.processQueue()
             } else if (newState.status === AudioPlayerStatus.Playing) {
                 // TODO weird on state when playing
                 this.isPlaying = true;
+                console.timeEnd('play')
                 const embed = new MessageEmbed()
                     .setColor('BLURPLE')
                     .setTitle('Now Playing')
@@ -94,34 +99,21 @@ class MusicSubscription {
         await this.processQueue();
     }
 
+    stop() {
+        this.queueLock = true;
+        this.queue = [];
+        this.audioPlayer.stop();
+    }
+
     async processQueue() {
         if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle || this.queue.length === 0) return;
 
         this.queueLock = true;
         this.currentlyPlaying = this.queue.shift();
-        console.time('ytdlRaw')
         try {
-            const process = ytdl.raw(
-                this.currentlyPlaying.url,
-                {
-                    o: '-',
-                    q: '',
-                    // v: '',
-                    f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-                    r: '100K',
-                    cookies: 'F:\\NEWPAPAKA\\repo\\Meatbag-Music-Bot\\cookies.txt',
-                    noPlaylist: true,
-                    // addHeader: 'LOGIN_INFO:AFmmF2swRAIgIbuQIwapdUb4Kbzr2Zs3DSGpTl_gaVzgfQlBPt2LEBMCIHoKroAOTCzOZj2-0kwWLuCVZT8m8E9hX3MlMC_ibVLS:QUQ3MjNmekZZU0YzWktkYU5mR2N3VXBTNDNUM2VQWWtIQ0g0RDB0WnljLTF5SG1jdnVweldSQmZhSWlHU0loWllhOVVaX2lsRThiR3ZaMGZwZTd5eDhVZ1dSOUY3RmlzRGFxN0pETFhqWl9zLTZmbXF6eUEwVzJYNkVtZWRWMWNiOEtsVjJFc1lQY0RXcjZFTlhIbjk4aUNNVjdpMjZIM0ZZTUZ3MUJlM05aV0QzRDdxS3QxM2NZ',
-                },
-                 { stdio: ['ignore', 'pipe', 'ignore'] },
-            );
-            const stream = process.stdout;
-            console.timeEnd('ytdlRaw')
-            console.time('audioResource')
-            const resource = createAudioResource(stream, { inputType: StreamType.WebmOpus });
+            const resource = await this.currentlyPlaying.createAudioResourceW();
             this.audioPlayer.play(resource);
             this.queueLock = false;
-            console.timeEnd('audioResource')
         } catch (error) {
             console.log(error);
             this.queueLock = false;

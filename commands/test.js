@@ -1,6 +1,14 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const ytdl = require('youtube-dl-exec');
+const ytdl = require('ytdl-core');
 const fs = require('fs');
+const dotenv = require('dotenv');
+const yts = require('yt-search');
+const ytsrAAAAAAA = require('ytsr');
+const ytsbetter = require('youtube-search-without-api-key');
+
+dotenv.config();
+
+const COOKIE = process.env.COOKIE;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,40 +16,64 @@ module.exports = {
         .setDescription('Displays test message'),
     async execute(interaction) {
         await interaction.reply('Test message')
-        const process = ytdl.raw(
-            'https://www.youtube.com/watch?v=62ezXENOuIA',
-            {
-                o: '-',
-                q: '',
-                // v: '',
-                f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
-                r: '10K',
-                cookies: 'F:\\NEWPAPAKA\\repo\\Meatbag-Music-Bot\\cookies.txt',
-                noPlaylist: true,
-                // printJson: true,
-                getTitle: true,
-                getUrl: true,
-                // addHeader: 'LOGIN_INFO:AFmmF2swRAIgIbuQIwapdUb4Kbzr2Zs3DSGpTl_gaVzgfQlBPt2LEBMCIHoKroAOTCzOZj2-0kwWLuCVZT8m8E9hX3MlMC_ibVLS:QUQ3MjNmekZZU0YzWktkYU5mR2N3VXBTNDNUM2VQWWtIQ0g0RDB0WnljLTF5SG1jdnVweldSQmZhSWlHU0loWllhOVVaX2lsRThiR3ZaMGZwZTd5eDhVZ1dSOUY3RmlzRGFxN0pETFhqWl9zLTZmbXF6eUEwVzJYNkVtZWRWMWNiOEtsVjJFc1lQY0RXcjZFTlhIbjk4aUNNVjdpMjZIM0ZZTUZ3MUJlM05aV0QzRDdxS3QxM2NZ',
-            }, { stdio: ['ignore', 'pipe', 'pipe'] },
-        );
-        // process.stderr.on('end', (data) => {
-        //     console.log(data);
+    //     const process = await ytdl.getInfo(
+    //         'ytsearch:son of odin',
+    //         {
+    //             // highWaterMark: 1024*1024*32,
+    //             requestOptions: {
+    //                 headers: {
+    //                     cookie: COOKIE,
+    //                 }
+    //             }
+    //         },
+    //     );
+    //     // process.on('info', (data) => {
+    //     //     console.log(data.videoDetails.title);
+    //     //     console.log(data.videoDetails.video_url);
+    //     //     console.log(data.videoDetails.thumbnails[3].url);
+    //     // })
+    //    console.log(process.videoDetails.title)
+    //     // process.pipe(fs.createWriteStream('song.mp3'));
+        console.time('filters');
+        const filters = await ytsrAAAAAAA.getFilters('ногу свело молчание ягнят');
+        const filter = filters.get('Type').get('Video');
+        console.timeEnd('filters');
+        console.time('request');
+        let videos = await ytsrAAAAAAA(filter.url, { limit: 1 });
+        // let needed;
+        console.timeEnd('request');
+        console.log(videos);
+        // videos.some(video => {
+        //     if (video.type === 'video') {
+        //         needed = video;
+        //         return true;
+        //     }            
+        // });
+        // console.log(typeof videos);
+
+        // console.time('loop');
+        // for (let video of videos.items) {
+        //     if (video.type === 'video') {
+        //         needed = video;
+        //         break;
+        //     }
+        // }
+        // console.timeEnd('loop');
+        // console.log(needed);
+
+        // const videos = r.videos.slice( 0, 1 )
+        // videos.forEach( function ( v ) {
+        //     const views = String( v.views ).padStart( 10, ' ' )
+        //     console.log( `${ views } | ${ v.title } (${ v.timestamp }) | ${ v.author.name }` )
+        // } )
+        // console.log(videos);
+        // videos.forEach((v) => {
+        //     console.log(v);
+        //     // console.log(v.url);
+        //     // console.log(v.snippet.thumbnails.url);
+        //     console.log('------------------------------------------------------')
         // })
-        // process.stderr.pipe(fs.createWriteStream('stdin.txt'))
-        // global.serverLog = "";
-        // process.stderr.write = (function(write) {
-        //     return function(string, encoding, fileDescriptor) {
-        //         global.serverLog += string;
-        //         write.apply(process.stderr, arguments);
-        //     };
-        // })(process.stderr.write);
-        let result;
-        process.stderr.on('data', function(chunk) {
-            result += chunk;
-            console.log('chunk:' + chunk);
-        });
-        process.stderr.on('end', () => {
-            console.log('result' + result);
-        })
+        // console.log(videos.items[0].thumbnails);
+        // console.log(videos.items);
     }
 }

@@ -31,7 +31,10 @@
     "ffmpeg-static": "^4.4.0",
     "libsodium-wrappers": "^0.7.9",
     "youtube-dl-exec": "^1.2.14",
-    "ytdl-core": "^4.9.1"
+    "youtube-search-without-api-key": "^1.0.6",
+    "yt-search": "^2.10.1",
+    "ytdl-core": "^4.9.1",
+    "ytsr": "^3.5.3"
   },
   "devDependencies": {
     "eslint": "^7.32.0"

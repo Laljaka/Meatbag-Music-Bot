@@ -1,8 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { Interaction, MessageEmbed } = require('discord.js');
-const ytdl = require('youtube-dl-exec');
-const { getInfo } = require('ytdl-core');
-const fs = require('fs');
+// const ytdl = require('youtube-dl-exec');
+// const { getInfo } = require('ytdl-core');
+// const fs = require('fs');
+// const re = require('RegExp')
 const test = 'test';
 const playerController = require('./music/playerController');
 
@@ -19,7 +20,6 @@ module.exports = {
          * @param {Interaction} interaction 
          */
     async execute(interaction) {
-        console.time('interaction')
         if (!interaction.member.voice.channelId) return await interaction.reply('You need to be in te voice chat to use this command');
         await interaction.deferReply();
         // var connection = getVoiceConnection(interaction.guildId);
@@ -39,8 +39,7 @@ module.exports = {
         // const player = createAudioPlayer();
         // connection.subscribe(player);
         // player.play(resource);
-        const string = interaction.options.getString('input');
-
+        let string = interaction.options.getString('input');
         // const process = ytdl.raw(
         //     string,
         //     {
@@ -62,7 +61,6 @@ module.exports = {
         
         // subscription.audioPlayer.play(resource);
         // const info = await getInfo(string);
-        console.timeEnd('interaction')
         await playerController.play(string, interaction);
     }
 }
