@@ -32,7 +32,6 @@ const subscriptions = new Map();
  */
 async function play(string, interaction) {
     const channel = interaction.member.voice.channel;
-
     let subscription = subscriptions.get(channel.guild.id);
     if (!subscription) {
         subscription = new MusicSubscription(
@@ -40,7 +39,7 @@ async function play(string, interaction) {
                 channelId: channel.id,
                 guildId: channel.guild.id,
                 adapterCreator: channel.guild.voiceAdapterCreator,
-            }), interaction.channelId, interaction.client,
+            }), interaction.channelId, interaction.guildId, interaction.client,
         );
         subscriptions.set(channel.guild.id, subscription)
     }
@@ -59,10 +58,7 @@ async function play(string, interaction) {
         // const video = videos[0];
         // var track = new Track(video.url, video.title, video.snippet.thumbnails.url);
     // }
-    console.time('get data')
     const track = await Track.getData(string);
-    console.timeEnd('get data')
-    console.time('embed')
     const embed = new MessageEmbed()
         .setColor('DARK_GREEN')
         .setTitle('Equeued')
@@ -70,9 +66,10 @@ async function play(string, interaction) {
         .setDescription(`[${track.title}](${track.url})`);
         // .addField('Now playing', `[${info.videoDetails.title}](${info.videoDetails.video_url})`);
     await interaction.editReply({ embeds: [embed] })
-    console.timeEnd('embed')
-    console.time('play')
     await subscription.enqueue(track);
+    subscription.emitter.once('destroyed', (guildId) => {
+        subscriptions.delete(guildId);
+    })
 }
 /**
  * 
@@ -83,6 +80,14 @@ async function skip(interaction) {
     if (subscription) {
         subscription.audioPlayer.stop();
         await interaction.reply('Skipped!');
+    } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
+}
+
+async function leave(interaction) {
+    const subscription = subscriptions.get(interaction.guildId);
+    if (subscription) {
+        subscription.voiceConnection.destroy();
+        await interaction.reply('I left the voice channel!');
     } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
 }
 /**
@@ -112,5 +117,6 @@ async function queue(interaction) {
 module.exports = {
     play,
     skip,
-    queue
+    queue,
+    leave
 }

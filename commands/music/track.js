@@ -13,11 +13,12 @@ class Track {
         this.url = url;
         this.title = title;
         this.thumbnail = thumbnail;
+        this.process;
     }
 
     createAudioResourceW() {
         return new Promise((resolve, reject) => {
-            const process = ytdl.raw(
+            this.process = ytdl.raw(
                 this.url,
                 {
                     o: '-',
@@ -41,12 +42,12 @@ class Track {
             //             }
             //         }
             // })
-            if (!process.stdout) {
+            if (!this.process.stdout) {
                 reject(new Error('no stdout'));
-                if (!process.killed) process.kill();
+                if (!this.process.killed) this.process.kill();
                 return;
             }
-            const stream = process.stdout;
+            const stream = this.process.stdout;
             // if (!stream) {
             //     reject(new Error('no stdout'));
             //     if (!stream.destroyed) stream.destroy();
@@ -55,7 +56,7 @@ class Track {
             // stream.once('readable', () => {
             //     resolve(createAudioResource(stream, { inputType: StreamType.WebmOpus }));
             // })
-            process.once('spawn', () => {
+            this.process.once('spawn', () => {
                 resolve(createAudioResource(stream, { inputType: StreamType.WebmOpus }));
             });
         })
@@ -65,10 +66,10 @@ class Track {
      * @param {String} string Url or search request
      * @returns Promise for a Track object
      */
-    static async getData(string) {
+    static async getData(string, amount = 1) {
         const filters = await ytsr.getFilters(string);
         const filter = filters.get('Type').get('Video');
-        const videos = await ytsr(filter.url, { limit: 1 });
+        const videos = await ytsr(filter.url, { limit: amount });
         return new Track(videos.items[0].url, videos.items[0].title, videos.items[0].thumbnails[0].url);
     }
 }

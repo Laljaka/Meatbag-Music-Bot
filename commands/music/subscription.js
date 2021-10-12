@@ -14,6 +14,7 @@ const { Client, MessageEmbed } = require('discord.js');
 const ytdl = require('youtube-dl-exec');
 const ytdlc = require('ytdl-core');
 const { Track } = require('./track');
+const { EventEmitter } = require('events');
 
 class MusicSubscription {
     /**
@@ -22,7 +23,7 @@ class MusicSubscription {
      * @param {String} channelId
      * @param {Client} client
      */
-    constructor(voiceConnection, channelId, client) {
+    constructor(voiceConnection, channelId, guildId, client) {
         this.voiceConnection = voiceConnection;
         this.audioPlayer = createAudioPlayer();
         this.queue = [];
@@ -32,27 +33,32 @@ class MusicSubscription {
         this.channelId = channelId;
         this.client = client;
         this.currentlyPlaying = null;
+        this.emitter = new EventEmitter();
+        this.guildId = guildId;
+        this.timeout;
 
         this.voiceConnection.on('stateChange', async (_, newState) => {
             if (newState.status === VoiceConnectionStatus.Disconnected) {
                 if (newState.reason === VoiceConnectionDisconnectReason.WebSocketClose && newState.closeCode === 4014) {
-                    try {
-                        await entersState(this.voiceConnection, VoiceConnectionStatus.Connecting, 5_000);
-                    } catch {
+                    // try {
+                    //     await entersState(this.voiceConnection, VoiceConnectionStatus.Connecting, 5_000);
+                    // } catch {
                         try {
-                        this.voiceConnection.destroy();
+                            this.voiceConnection.destroy();
+                            // this.emitter.emit('destroyed');
                         } catch (err) { console.log(err) }
-                    }
+                    // }
                 } else if (this.voiceConnection.rejoinAttempts < 5) {
                     await wait((this.voiceConnection.rejoinAttempts + 1) * 5_000);
                     this.voiceConnection.rejoin();
                 } else {
                     this.voiceConnection.destroy();
+                    // this.emitter.emit('destroyed');
                 }
             } else if (newState.status === VoiceConnectionStatus.Destroyed) {
                 // TODO this.stop()
                 this.stop();
-                console.log('destroyed');
+                this.emitter.emit('destroyed', this.guildId);
             } else if (!this.readyLock && (newState.status === VoiceConnectionStatus.Connecting || newState.status === VoiceConnectionStatus.Signalling)) {
                 this.readyLock = true;
                 try {
@@ -73,16 +79,19 @@ class MusicSubscription {
                 await this.processQueue()
             } else if (newState.status === AudioPlayerStatus.Playing) {
                 // TODO weird on state when playing
-                this.isPlaying = true;
-                console.timeEnd('play')
-                const embed = new MessageEmbed()
-                    .setColor('BLURPLE')
-                    .setTitle('Now Playing')
-                    .setThumbnail(this.currentlyPlaying.thumbnail)
-                    .setDescription(`[${this.currentlyPlaying.title}](${this.currentlyPlaying.url})`);
-                this.client.channels.fetch(this.channelId).then(channel => {
-                    channel.send({ embeds: [embed] });
-                });
+                if (!this.isPlaying) {
+                    this.isPlaying = true;
+                    // if (this.currentlyPlaying !== null) {
+                    const embed = new MessageEmbed()
+                        .setColor('BLURPLE')
+                        .setTitle('Now Playing')
+                        .setThumbnail(this.currentlyPlaying.thumbnail)
+                        .setDescription(`[${this.currentlyPlaying.title}](${this.currentlyPlaying.url})`);
+                    this.client.channels.fetch(this.channelId).then(channel => {
+                        channel.send({ embeds: [embed] });
+                    });
+                    // }
+                }
             }
         });
 
@@ -96,17 +105,40 @@ class MusicSubscription {
      */
     async enqueue(track) {
         this.queue.push(track);
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = undefined;
+        }
         await this.processQueue();
     }
 
     stop() {
+        // return new Promise((resolve, reject) => {
         this.queueLock = true;
         this.queue = [];
-        this.audioPlayer.stop();
+        // this.currentlyPlaying = null;
+        this.audioPlayer.stop(true);
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = undefined;
+        }
+        // if (this.currentlyPlaying) {
+        //     if (!this.currentlyPlaying.process.killed) this.currentlyPlaying.process.kill()
+        // }
+        // resolve();
+        // })
     }
 
     async processQueue() {
-        if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle || this.queue.length === 0) return;
+        if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle) return;
+        if (this.queue.length === 0) {
+            return this.timeout = setTimeout(() => {
+                this.client.channels.fetch(this.channelId).then(channel => {
+                    channel.send('I left the voice chat due to inactivity');
+                });
+                this.voiceConnection.destroy();
+            }, 10*60*1000);
+        }
 
         this.queueLock = true;
         this.currentlyPlaying = this.queue.shift();
