@@ -5,7 +5,14 @@ const pjson = require('./package.json');
 
 dotenv.config();
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] });
+class MeatbagClient extends Client {
+    constructor(options) {
+        super(options);
+        this.subscriptions = new Map();
+    }
+}
+
+const client = new MeatbagClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] });
 
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));

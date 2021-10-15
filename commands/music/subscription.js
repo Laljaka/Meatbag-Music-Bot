@@ -14,7 +14,7 @@ const { Client, MessageEmbed } = require('discord.js');
 const ytdl = require('youtube-dl-exec');
 const ytdlc = require('ytdl-core');
 const { Track } = require('./track');
-const { EventEmitter } = require('events');
+// const { EventEmitter } = require('events');
 
 class MusicSubscription {
     /**
@@ -33,7 +33,7 @@ class MusicSubscription {
         this.channelLock = channelId;
         this.client = client;
         this.currentlyPlaying = null;
-        this.emitter = new EventEmitter();
+        // this.emitter = new EventEmitter();
         this.guildId = guildId;
         this.timeout;
 
@@ -56,9 +56,8 @@ class MusicSubscription {
                     // this.emitter.emit('destroyed');
                 }
             } else if (newState.status === VoiceConnectionStatus.Destroyed) {
-                // TODO this.stop()
                 this.stop();
-                this.emitter.emit('destroyed', this.guildId);
+                // this.emitter.emit('destroyed', this.guildId);
             } else if (!this.readyLock && (newState.status === VoiceConnectionStatus.Connecting || newState.status === VoiceConnectionStatus.Signalling)) {
                 this.readyLock = true;
                 try {
@@ -73,12 +72,10 @@ class MusicSubscription {
 
         this.audioPlayer.on('stateChange', async (oldState, newState) => {
             if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
-                // TODO start playing a new track
                 this.currentlyPlaying = null;
                 this.isPlaying = false;
                 await this.processQueue()
             } else if (newState.status === AudioPlayerStatus.Playing) {
-                // TODO weird on state when playing
                 if (!this.isPlaying) {
                     this.isPlaying = true;
                     // if (this.currentlyPlaying !== null) {
@@ -120,6 +117,7 @@ class MusicSubscription {
             clearTimeout(this.timeout);
             this.timeout = undefined;
         }
+        this.client.subscriptions.delete(this.guildId)
     }
 
     async processQueue() {

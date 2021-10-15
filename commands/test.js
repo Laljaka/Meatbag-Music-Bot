@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const yts = require('yt-search');
 const ytsrAAAAAAA = require('ytsr');
 const ytsbetter = require('youtube-search-without-api-key');
+const { Interaction } = require('discord.js');
 
 dotenv.config();
 
@@ -14,12 +15,12 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('test')
         .setDescription('Displays test message'),
+        /**
+         * 
+         * @param { Interaction } interaction 
+         */
     async execute(interaction) {
         await interaction.reply('Test message')
-
-        const video = await yts({ videoId: '62ezXENOuIA' });
-        console.log(video.title);
-        console.log(video.url);
-        console.log(video.thumbnail);
+        console.log(interaction.client.subscriptions);
     }
 }

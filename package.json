@@ -4,7 +4,7 @@
   "description": "Test bot",
   "main": "index.js",
   "scripts": {
-    "deploy": ""
+    "deploy": "mode deploy-commands.js"
   },
   "repository": {
     "type": "git",

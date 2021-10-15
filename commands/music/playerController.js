@@ -8,7 +8,7 @@ const ytsr = require('ytsr');
 const { MessageEmbed, Interaction } = require('discord.js');
 const { Track } = require('./track');
 
-const subscriptions = new Map();
+// const subscriptions = new Map();
 
 // function isUrl(s) {
 //     const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
@@ -22,7 +22,7 @@ const subscriptions = new Map();
  */
 async function play(track, interaction) {
     const channel = interaction.member.voice.channel;
-    let subscription = subscriptions.get(channel.guild.id);
+    let subscription = interaction.client.subscriptions.get(channel.guild.id);
     if (!subscription) {
         subscription = new MusicSubscription(
             joinVoiceChannel({
@@ -31,7 +31,7 @@ async function play(track, interaction) {
                 adapterCreator: channel.guild.voiceAdapterCreator,
             }), interaction.channelId, interaction.guildId, interaction.client,
         );
-        subscriptions.set(channel.guild.id, subscription)
+        interaction.client.subscriptions.set(channel.guild.id, subscription)
     }
 
     if (subscription.channelLock !== interaction.channelId) return await interaction.editReply({ content: `Please use the same channel as you did when the bot first joined the voice chat, which is <#${subscription.channelLock}>`, embeds: [], components: [] });
@@ -44,16 +44,16 @@ async function play(track, interaction) {
         // .addField('Now playing', `[${info.videoDetails.title}](${info.videoDetails.video_url})`);
     await interaction.editReply({ content: '\u200b',embeds: [embed], components: [] })
     await subscription.enqueue(track);
-    subscription.emitter.once('destroyed', (guildId) => {
-        subscriptions.delete(guildId);
-    })
+    // subscription.emitter.once('destroyed', (guildId) => {
+    //     interaction.client.subscriptions.delete(guildId);
+    // })
 }
 /**
  * 
  * @param {Interaction} interaction Discord Interaction
  */
 async function skip(interaction) {
-    const subscription = subscriptions.get(interaction.guildId);
+    const subscription = interaction.client.subscriptions.get(interaction.guildId);
     if (subscription) {
         subscription.audioPlayer.stop();
         await interaction.reply('Skipped!');
@@ -61,7 +61,7 @@ async function skip(interaction) {
 }
 
 async function leave(interaction) {
-    const subscription = subscriptions.get(interaction.guildId);
+    const subscription = interaction.client.subscriptions.get(interaction.guildId);
     if (subscription) {
         subscription.voiceConnection.destroy();
         await interaction.reply('I left the voice channel!');
@@ -72,7 +72,7 @@ async function leave(interaction) {
  * @param {Interaction} interaction Discord Interaction
  */
 async function queue(interaction) {
-    const subscription = subscriptions.get(interaction.guildId);
+    const subscription = interaction.client.subscriptions.get(interaction.guildId);
     if (subscription) {
         if (subscription.currentlyPlaying !== null) {
             const embed = new MessageEmbed()
