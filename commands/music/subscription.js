@@ -30,7 +30,7 @@ class MusicSubscription {
         this.isPlaying = false;
         this.queueLock = false;
         this.readyLock = false;
-        this.channelId = channelId;
+        this.channelLock = channelId;
         this.client = client;
         this.currentlyPlaying = null;
         this.emitter = new EventEmitter();
@@ -84,10 +84,10 @@ class MusicSubscription {
                     // if (this.currentlyPlaying !== null) {
                     const embed = new MessageEmbed()
                         .setColor('BLURPLE')
-                        .setTitle('Now Playing')
+                        .setTitle(`Now Playing ${this.currentlyPlaying.duration}`)
                         .setThumbnail(this.currentlyPlaying.thumbnail)
                         .setDescription(`[${this.currentlyPlaying.title}](${this.currentlyPlaying.url})`);
-                    this.client.channels.fetch(this.channelId).then(channel => {
+                    this.client.channels.fetch(this.channelLock).then(channel => {
                         channel.send({ embeds: [embed] });
                     });
                     // }
@@ -113,27 +113,20 @@ class MusicSubscription {
     }
 
     stop() {
-        // return new Promise((resolve, reject) => {
         this.queueLock = true;
         this.queue = [];
-        // this.currentlyPlaying = null;
         this.audioPlayer.stop(true);
         if (this.timeout) {
             clearTimeout(this.timeout);
             this.timeout = undefined;
         }
-        // if (this.currentlyPlaying) {
-        //     if (!this.currentlyPlaying.process.killed) this.currentlyPlaying.process.kill()
-        // }
-        // resolve();
-        // })
     }
 
     async processQueue() {
         if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle) return;
         if (this.queue.length === 0) {
             return this.timeout = setTimeout(() => {
-                this.client.channels.fetch(this.channelId).then(channel => {
+                this.client.channels.fetch(this.channelLock).then(channel => {
                     channel.send('I left the voice chat due to inactivity');
                 });
                 this.voiceConnection.destroy();

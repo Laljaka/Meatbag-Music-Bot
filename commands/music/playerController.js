@@ -7,11 +7,6 @@ const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 const { MessageEmbed, Interaction } = require('discord.js');
 const { Track } = require('./track');
-// const dotenv = require('dotenv');
-
-// dotenv.config()
-
-// const COOKIE = process.env.COOKIE;
 
 const subscriptions = new Map();
 
@@ -20,17 +15,12 @@ const subscriptions = new Map();
 //     return regexp.test(s);
 // }
 
-// function youtube_parser(url){
-//     const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-//     const match = url.match(regExp);
-//     return (match&&match[7].length==11)? match[7] : false;
-// }
 /**
  * 
- * @param {String} string 
+ * @param {Track} track 
  * @param {Interaction} interaction Discord Interaction
  */
-async function play(string, interaction) {
+async function play(track, interaction) {
     const channel = interaction.member.voice.channel;
     let subscription = subscriptions.get(channel.guild.id);
     if (!subscription) {
@@ -44,28 +34,15 @@ async function play(string, interaction) {
         subscriptions.set(channel.guild.id, subscription)
     }
 
-    // if (!isUrl(string)) {
+    if (subscription.channelLock !== interaction.channelId) return await interaction.editReply({ content: `Please use the same channel as you did when the bot first joined the voice chat, which is <#${subscription.channelLock}>`, embeds: [], components: [] });
 
-    // const filters = await ytsr.getFilters(string);
-    // const filter = filters.get('Type').get('Video');
-    // const videos = await ytsr(filter.url, { limit: 1 });
-    // const video = videos.items[0];
-    
-    // const track = new Track(video.url, video.title, video.thumbnails[0].url);
-    // } else {
-        // const videoId = youtube_parser(string);
-        // const videos = await ytsbetter.search(videoId);
-        // const video = videos[0];
-        // var track = new Track(video.url, video.title, video.snippet.thumbnails.url);
-    // }
-    const track = await Track.getData(string);
     const embed = new MessageEmbed()
         .setColor('DARK_GREEN')
-        .setTitle('Equeued')
+        .setTitle(`Equeued ${track.duration}`)
         .setThumbnail(track.thumbnail)
         .setDescription(`[${track.title}](${track.url})`);
         // .addField('Now playing', `[${info.videoDetails.title}](${info.videoDetails.video_url})`);
-    await interaction.editReply({ embeds: [embed] })
+    await interaction.editReply({ content: '\u200b',embeds: [embed], components: [] })
     await subscription.enqueue(track);
     subscription.emitter.once('destroyed', (guildId) => {
         subscriptions.delete(guildId);

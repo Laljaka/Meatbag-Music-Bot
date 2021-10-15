@@ -21,6 +21,6 @@ for (const file of contextFiles) {
 
 const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 // potats: 734821274555121704, dev-guild: 290888160714686464
-rest.put(Routes.applicationGuildCommands('796650236507324467', '290888160714686464'), { body: commands })
+rest.put(Routes.applicationGuildCommands('796650236507324467', '888131948009128007'), { body: commands })
     .then(() => console.log('Successfully registered application commands.'))
     .catch(console.error);

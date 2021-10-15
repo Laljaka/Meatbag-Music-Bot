@@ -2,23 +2,23 @@ const ytsr = require('ytsr');
 const ytdl = require('youtube-dl-exec');
 const ytdlc = require('ytdl-core');
 const { createAudioResource, StreamType } = require('@discordjs/voice');
-const dotenv = require('dotenv');
+// const dotenv = require('dotenv');
 
-dotenv.config()
+// dotenv.config()
 
-const COOKIE = process.env.COOKIE;
+// const COOKIE = process.env.COOKIE;
 
 class Track {
-    constructor(url, title, thumbnail) {
+    constructor(url, title, thumbnail, duration) {
         this.url = url;
         this.title = title;
         this.thumbnail = thumbnail;
-        this.process;
+        this.duration = duration;
     }
 
     createAudioResourceW() {
         return new Promise((resolve, reject) => {
-            this.process = ytdl.raw(
+            const process = ytdl.raw(
                 this.url,
                 {
                     o: '-',
@@ -42,12 +42,12 @@ class Track {
             //             }
             //         }
             // })
-            if (!this.process.stdout) {
+            if (!process.stdout) {
                 reject(new Error('no stdout'));
-                if (!this.process.killed) this.process.kill();
+                if (!process.killed) process.kill();
                 return;
             }
-            const stream = this.process.stdout;
+            const stream = process.stdout;
             // if (!stream) {
             //     reject(new Error('no stdout'));
             //     if (!stream.destroyed) stream.destroy();
@@ -56,7 +56,7 @@ class Track {
             // stream.once('readable', () => {
             //     resolve(createAudioResource(stream, { inputType: StreamType.WebmOpus }));
             // })
-            this.process.once('spawn', () => {
+            process.once('spawn', () => {
                 resolve(createAudioResource(stream, { inputType: StreamType.WebmOpus }));
             });
         })
@@ -66,11 +66,18 @@ class Track {
      * @param {String} string Url or search request
      * @returns Promise for a Track object
      */
-    static async getData(string, amount = 1) {
+    static async getData(string) {
+        const filters = await ytsr.getFilters(string);
+        const filter = filters.get('Type').get('Video');
+        const videos = await ytsr(filter.url, { limit: 1 });
+        return new Track(videos.items[0].url, videos.items[0].title, videos.items[0].thumbnails[0].url, videos.items[0].duration);
+    }
+
+    static async getMultipleData(string, amount) {
         const filters = await ytsr.getFilters(string);
         const filter = filters.get('Type').get('Video');
         const videos = await ytsr(filter.url, { limit: amount });
-        return new Track(videos.items[0].url, videos.items[0].title, videos.items[0].thumbnails[0].url);
+        return videos;
     }
 }
 
