@@ -2,10 +2,13 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const ytdl = require('ytdl-core');
 const fs = require('fs');
 const dotenv = require('dotenv');
-const yts = require('yt-search');
-const ytsrAAAAAAA = require('ytsr');
-const ytsbetter = require('youtube-search-without-api-key');
 const { Interaction } = require('discord.js');
+const { isPlaylist, isSpotifyTrack } = require('../utils/regexp');
+const { Track } = require('./music/track');
+const { getTrackData, getMultipleTrackData, getPlaylistData, getSpotifyTrack, getSpotifyPlaylist } = require('../utils/apis.js');
+const ytsr = require('ytsr');
+const pLimit = require('p-limit');
+// import pLimit from 'p-limit';
 
 dotenv.config();
 
@@ -21,6 +24,6 @@ module.exports = {
          */
     async execute(interaction) {
         await interaction.reply('Test message')
-        console.log(interaction.client.subscriptions);
+        console.log(isSpotifyTrack('https://open.spotify.com/playlist/37i9dQZEVXcXuUkbUY9cSY?si=04f7dbaa29874fcf'))
     }
 }

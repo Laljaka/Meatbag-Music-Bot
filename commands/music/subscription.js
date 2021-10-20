@@ -72,7 +72,7 @@ class MusicSubscription {
 
         this.audioPlayer.on('stateChange', async (oldState, newState) => {
             if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
-                this.currentlyPlaying = null;
+                // this.currentlyPlaying = null;
                 this.isPlaying = false;
                 await this.processQueue()
             } else if (newState.status === AudioPlayerStatus.Playing) {
@@ -101,7 +101,7 @@ class MusicSubscription {
      * @param { Track } track 
      */
     async enqueue(track) {
-        this.queue.push(track);
+        this.queue = this.queue.concat(track);
         if (this.timeout) {
             clearTimeout(this.timeout);
             this.timeout = undefined;
@@ -139,6 +139,7 @@ class MusicSubscription {
             this.queueLock = false;
         } catch (error) {
             console.log(error);
+            console.log('skipped song cause of error');
             this.queueLock = false;
             return await this.processQueue();
         }

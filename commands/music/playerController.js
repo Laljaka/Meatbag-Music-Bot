@@ -17,7 +17,7 @@ const { Track } = require('./track');
 
 /**
  * 
- * @param {Track} track 
+ * @param {} track 
  * @param {Interaction} interaction Discord Interaction
  */
 async function play(track, interaction) {
@@ -38,12 +38,12 @@ async function play(track, interaction) {
 
     const embed = new MessageEmbed()
         .setColor('DARK_GREEN')
-        .setTitle(`Equeued ${track.duration}`)
+        .setTitle(`Equeued ${track.name}`)
         .setThumbnail(track.thumbnail)
         .setDescription(`[${track.title}](${track.url})`);
         // .addField('Now playing', `[${info.videoDetails.title}](${info.videoDetails.video_url})`);
     await interaction.editReply({ content: '\u200b',embeds: [embed], components: [] })
-    await subscription.enqueue(track);
+    await subscription.enqueue(track.track);
     // subscription.emitter.once('destroyed', (guildId) => {
     //     interaction.client.subscriptions.delete(guildId);
     // })
