@@ -25,7 +25,6 @@ function isSpotifyPlaylist(url) {
 }
 
 module.exports = {
-    isYoutube,
     isYoutubePlaylist,
     isSpotify,
     isSpotifyTrack,

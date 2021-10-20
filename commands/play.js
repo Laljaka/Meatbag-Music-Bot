@@ -69,7 +69,7 @@ module.exports = {
                 await playerController.play(final, interaction);
             } else if (isSpotifyPlaylist(string)) {
                 const data = await getSpotifyPlaylist(string);
-                const title = data.body.items[0].track.artists[0].name + ' - ' + data.body.items[0].track.name;
+                // const title = data.body.items[0].track.artists[0].name + ' - ' + data.body.items[0].track.name;
                 const requests = [];
                 const limit = pLimit(3);
                 // const timeout = i => new Promise(resolve => setTimeout(() => resolve(i), i));
