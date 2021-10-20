@@ -1,9 +1,14 @@
+// const youtube = /^https?:\/\/(www.youtube.com|youtube.com)\/(.*)$/
 const youtubePlaylist = /^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/;
 const spotify = /^https?:\/\/open\.spotify\.com\/(.*)$/;
 const spotifyTrack = /^https?:\/\/open\.spotify\.com\/track\/(.*)$/;
 const spotifyPlaylist = /^https?:\/\/open\.spotify\.com\/playlist\/(.*)$/;
 
-function isPlaylist(url) {
+// function isYoutube(url) {
+//     return youtube.test(url)
+// }
+
+function isYoutubePlaylist(url) {
     return youtubePlaylist.test(url);
 } 
 
@@ -20,7 +25,8 @@ function isSpotifyPlaylist(url) {
 }
 
 module.exports = {
-    isPlaylist,
+    isYoutube,
+    isYoutubePlaylist,
     isSpotify,
     isSpotifyTrack,
     isSpotifyPlaylist

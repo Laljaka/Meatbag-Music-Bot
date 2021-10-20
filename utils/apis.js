@@ -29,7 +29,7 @@ spotify.clientCredentialsGrant().then(
 async function getTrackData(string) {
     // const filters = await ytsr.getFilters(string);
     // const filter = filters.get('Type').get('Video');
-    const filter = 'https://www.youtube.com/results?search_query='.concat(string).concat('&sp=EgIQAQ%253D%253D');
+    const filter = 'https://www.youtube.com/results?search_query=' + string + '&sp=EgIQAQ%253D%253D';
     const videos = await ytsr(filter, { limit: 1 });
     return videos;
 }
@@ -42,7 +42,7 @@ async function getTrackData(string) {
 async function getMultipleTrackData(string, amount) {
     // const filters = await ytsr.getFilters(string);
     // const filter = filters.get('Type').get('Video');
-    const filter = 'https://www.youtube.com/results?search_query='.concat(string).concat('&sp=EgIQAQ%253D%253D');
+    const filter = 'https://www.youtube.com/results?search_query=' + string + '&sp=EgIQAQ%253D%253D';
     const videos = await ytsr(filter, { limit: amount });
     return videos;
 }

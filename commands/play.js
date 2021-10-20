@@ -8,11 +8,11 @@ const test = 'test';
 const playerController = require('./music/playerController');
 const { Track } = require('./music/track');
 const { getTrackData, getMultipleTrackData, getPlaylistData, getSpotifyTrack, getSpotifyPlaylist } = require('../utils/apis.js');
-const { isPlaylist, isSpotify, isSpotifyTrack, isSpotifyPlaylist } = require('../utils/regexp');
+const { isYoutubePlaylist, isSpotify, isSpotifyTrack, isSpotifyPlaylist } = require('../utils/regexp');
 const pLimit = require('p-limit');
 
 module.exports = {
-    data: new SlashCommandBuilder()
+    data: new SlashCommandBuilder() 
         .setName('play')
         .setDescription('Joins the voice channel and plays the queued song')
         .addStringOption(option =>
@@ -28,7 +28,7 @@ module.exports = {
         await interaction.deferReply();
         const string = interaction.options.getString('song');
         if (!isSpotify(string)) {
-            if (isPlaylist(string)) {
+            if (isYoutubePlaylist(string)) {
                 const tracks = [];
                 const data = await getPlaylistData(string);
                 data.items.forEach(entry => {

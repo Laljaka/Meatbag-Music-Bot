@@ -42,7 +42,7 @@ async function play(track, interaction) {
         .setThumbnail(track.thumbnail)
         .setDescription(`[${track.title}](${track.url})`);
         // .addField('Now playing', `[${info.videoDetails.title}](${info.videoDetails.video_url})`);
-    await interaction.editReply({ content: '\u200b',embeds: [embed], components: [] })
+    await interaction.editReply({ content: '\u200b', embeds: [embed], components: [] })
     await subscription.enqueue(track.track);
     // subscription.emitter.once('destroyed', (guildId) => {
     //     interaction.client.subscriptions.delete(guildId);
@@ -91,9 +91,28 @@ async function queue(interaction) {
     } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
 }
 
+async function jump(interaction, number) {
+    const subscription = interaction.client.subscriptions.get(interaction.guildId);
+    if (subscription) {
+        if (number <= 1 || number > subscription.queue.lenght) return await interaction.reply({ content: 'Provided number is out of range', ephemeral: true });
+        else if (number === 2) {
+            subscription.audioPlayer.stop();
+            await interaction.reply({ content: 'Jumped to the next track, could\'ve just used skip', ephemeral: true });
+        }
+        else {
+            subscription.queueLock = true;
+            subscription.queue = subscription.queue.slice(number - 2);
+            subscription.queueLock = false;
+            subscription.audioPlayer.stop();
+            await interaction.reply({ content: `Jumped to position ${number}`, ephemeral: true });
+        }
+    } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
+}
+
 module.exports = {
     play,
     skip,
     queue,
-    leave
+    leave,
+    jump
 }
