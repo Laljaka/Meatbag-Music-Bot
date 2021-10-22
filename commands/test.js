@@ -4,7 +4,7 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 const { Interaction } = require('discord.js');
 const { isPlaylist, isSpotifyTrack } = require('../utils/regexp');
-const { Track } = require('./music/track');
+const { Track } = require('../music/track');
 const { getTrackData, getMultipleTrackData, getPlaylistData, getSpotifyTrack, getSpotifyPlaylist } = require('../utils/apis.js');
 const ytsr = require('ytsr');
 const pLimit = require('p-limit');
@@ -24,6 +24,6 @@ module.exports = {
          */
     async execute(interaction) {
         await interaction.reply('Test message')
-        console.log(isSpotifyTrack('https://open.spotify.com/playlist/37i9dQZEVXcXuUkbUY9cSY?si=04f7dbaa29874fcf'))
+        // console.log(isSpotifyTrack('https://open.spotify.com/playlist/37i9dQZEVXcXuUkbUY9cSY?si=04f7dbaa29874fcf'))
     }
 }

@@ -5,16 +5,42 @@ const pjson = require('./package.json');
 
 dotenv.config();
 
+
 class MeatbagClient extends Client {
     constructor(options) {
         super(options);
-        this.subscriptions = new Map();
+        this.subscriptions = new Collection();
+        this.commands = new Collection();
+        this.oldCommands = new Collection();
+        this.prefixes = new Collection();
+    }
+
+    syncPrefixes() {
+        let madeChanges = false;
+        this.guilds.cache.forEach(guild => {
+            if (!this.prefixes.has(guild.id)) {
+                this.prefixes.set(guild.id, '?');
+                madeChanges = true;
+            }
+        });
+
+        if (madeChanges) {
+            const data = JSON.stringify(Object.fromEntries(this.prefixes), null, 4);
+            fs.writeFileSync('./storage/prefixes.json', data);
+        }
     }
 }
 
-const client = new MeatbagClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] });
+const client = new MeatbagClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGES] });
 
-client.commands = new Collection();
+const raw = fs.readFileSync('./storage/prefixes.json');
+const data = JSON.parse(raw);
+for (const [key, value] of Object.entries(data)) {
+    client.prefixes.set(key, value);
+}
+
+
+// client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 const contextFiles = fs.readdirSync('./context').filter(file => file.endsWith('.js'));

@@ -106,7 +106,7 @@ class MusicSubscription {
             clearTimeout(this.timeout);
             this.timeout = undefined;
         }
-        await this.processQueue();
+        this.processQueue();
     }
 
     stop() {
@@ -117,12 +117,13 @@ class MusicSubscription {
             clearTimeout(this.timeout);
             this.timeout = undefined;
         }
-        this.client.subscriptions.delete(this.guildId)
+        this.client.subscriptions.delete(this.guildId);
     }
 
     async processQueue() {
         if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle) return;
         if (this.queue.length === 0) {
+            this.currentlyPlaying = null;
             return this.timeout = setTimeout(() => {
                 this.client.channels.fetch(this.channelLock).then(channel => {
                     channel.send('I left the voice chat due to inactivity');
@@ -141,7 +142,7 @@ class MusicSubscription {
             console.log(error);
             console.log('skipped song cause of error');
             this.queueLock = false;
-            return await this.processQueue();
+            return this.processQueue();
         }
     }
 }

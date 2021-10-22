@@ -1,25 +1,36 @@
 const ytsr = require('ytsr');
 const ytpl = require('ytpl');
 const SpotifyWebApi = require('spotify-web-api-node');
+const { isYoutubeTrack } = require('./regexp');
 
 
-const spotify = new SpotifyWebApi({
+class GoodSpotifyWebApi extends SpotifyWebApi {
+    constructor(options) {
+        super(options);
+        this.expired = true;
+    }
+
+    async update() {
+        try {
+            const data = await this.clientCredentialsGrant()
+            console.log('The access token expires in ' + data.body['expires_in']);
+            console.log('The access token is ' + data.body['access_token']);
+            
+            // Save the access token so that it's used in future calls
+            this.setAccessToken(data.body['access_token']);
+            this.expired = false;
+            setTimeout(() => {this.expired = true}, 60*60*1000);
+        } catch (err) {console.log('Something went wrong when retrieving an access token', err)}
+    }
+}
+
+
+const spotify = new GoodSpotifyWebApi({
     clientId: '8cf20745c9164fc38fc928e911f7969f',
     clientSecret: '1799a9145bd94a3895853735f7eda5dd'
 });
 
-spotify.clientCredentialsGrant().then(
-  function(data) {
-    console.log('The access token expires in ' + data.body['expires_in']);
-    console.log('The access token is ' + data.body['access_token']);
-
-    // Save the access token so that it's used in future calls
-    spotify.setAccessToken(data.body['access_token']);
-  },
-  function(err) {
-    console.log('Something went wrong when retrieving an access token', err);
-  }
-);
+spotify.update();
 
 
 /**
@@ -29,7 +40,9 @@ spotify.clientCredentialsGrant().then(
 async function getTrackData(string) {
     // const filters = await ytsr.getFilters(string);
     // const filter = filters.get('Type').get('Video');
-    const filter = 'https://www.youtube.com/results?search_query=' + string + '&sp=EgIQAQ%253D%253D';
+    let filter;
+    if (!isYoutubeTrack(string)) filter = 'https://www.youtube.com/results?search_query=' + string + '&sp=EgIQAQ%253D%253D';
+    else filter = string;
     const videos = await ytsr(filter, { limit: 1 });
     return videos;
 }
@@ -64,6 +77,7 @@ async function getPlaylistData(string) {
  * @returns Spotify track data
  */
 async function getSpotifyTrack(string) {
+    if (spotify.expired) await spotify.update();
     const match = /(?<=track\/)(.*)(?=\?)/;
     const result = string.match(match);
     const data = await spotify.getTrack(result[0]);
@@ -71,6 +85,7 @@ async function getSpotifyTrack(string) {
 }
 
 async function getSpotifyPlaylist(string) {
+    if (spotify.expired) await spotify.update();
     const match = /(?<=playlist\/)(.*)(?=\?)/;
     const result = string.match(match);
     const data = await spotify.getPlaylistTracks(result[0], { limit: 20 });

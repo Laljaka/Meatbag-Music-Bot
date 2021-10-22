@@ -34,8 +34,11 @@ async function play(track, interaction) {
         interaction.client.subscriptions.set(channel.guild.id, subscription)
     }
 
-    if (subscription.channelLock !== interaction.channelId) return await interaction.editReply({ content: `Please use the same channel as you did when the bot first joined the voice chat, which is <#${subscription.channelLock}>`, embeds: [], components: [] });
-
+    if (subscription.channelLock !== interaction.channelId) {
+        await interaction.deleteReply();
+        return await interaction.followUp({ content: `Please use the same channel as you did when the bot first joined the voice chat, which is <#${subscription.channelLock}>`, ephemeral: true });
+    }
+    
     const embed = new MessageEmbed()
         .setColor('DARK_GREEN')
         .setTitle(`Equeued ${track.name}`)
@@ -55,6 +58,8 @@ async function play(track, interaction) {
 async function skip(interaction) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
     if (subscription) {
+        if (!subscription.isPlaying) return await interaction.reply({ content: 'I am not playing anything or you are skipping too fast', ephemeral: true });
+        // subscription.isPlaying = false;
         subscription.audioPlayer.stop();
         await interaction.reply('Skipped!');
     } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });

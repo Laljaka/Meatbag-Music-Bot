@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { getMultipleTrackData } = require('../utils/apis.js');
 const { Interaction, MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js');
-const { Track } = require('./music/track');
-const { isPlaylist } = require('../utils/regexp');
-const playerController = require('./music/playerController');
+const { Track } = require('../music/track');
+const { isYoutubePlaylist } = require('../utils/regexp');
+const playerController = require('../music/playerController');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -27,7 +27,7 @@ module.exports = {
         if (!interaction.member.voice.channelId) return await interaction.reply('You need to be in the voice channel to use this command');
         const number = interaction.options.getInteger('amount');
         const string = interaction.options.getString('song');
-        if (isPlaylist(string)) return await interaction.reply({ content: 'Please use only song links or search requests for this command', ephemeral: true });
+        if (isYoutubePlaylist(string)) return await interaction.reply({ content: 'Please use only song links or search requests for this command', ephemeral: true });
         if (number <= 0) return await interaction.reply({ content: 'Invalid number', ephemeral: true });
         else if (number > 10) return await interaction.reply({ content: `Yeah, try ${number*10} next time, that will be easy to read.`, ephemeral: true });
         else {
@@ -60,17 +60,19 @@ module.exports = {
             const collector = interaction.channel.createMessageComponentCollector({ time: 30*1000 });
             let isReplied = false;
             collector.on('collect', async i => {
-                const trackData = resultMap.get(i.values[0])
-                const final = {
-                    name: `1 Track`,
-                    thumbnail: trackData.thumbnails[0].url,
-                    title: trackData.title,
-                    url: trackData.url,
-                    track: [new Track(trackData.url, trackData.title, trackData.thumbnails[0].url, trackData.duration)]
+                if (i.user.id === interaction.user.id) {
+                    const trackData = resultMap.get(i.values[0])
+                    const final = {
+                        name: `1 Track`,
+                        thumbnail: trackData.thumbnails[0].url,
+                        title: trackData.title,
+                        url: trackData.url,
+                        track: [new Track(trackData.url, trackData.title, trackData.thumbnails[0].url, trackData.duration)]
+                    }
+                    isReplied = true;
+                    // await interaction.deleteReply();
+                    await playerController.play(final, interaction);
                 }
-                isReplied = true;
-                // await interaction.deleteReply();
-                await playerController.play(final, interaction);
             })
     
             collector.on('end', async _ => {

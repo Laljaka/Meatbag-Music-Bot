@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageSelectMenu, Interaction } = require('discord.js');
-const playerController = require('../commands/music/playerController');
-const { Track } = require('../commands/music/track');
+const playerController = require('../music/playerController');
+const { Track } = require('../music/track');
 
 module.exports = {
     data: new SlashCommandBuilder()

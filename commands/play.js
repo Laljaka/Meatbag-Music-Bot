@@ -5,8 +5,8 @@ const { Interaction, MessageEmbed, MessageActionRow, MessageSelectMenu } = requi
 // const fs = require('fs');
 // const re = require('RegExp')
 const test = 'test';
-const playerController = require('./music/playerController');
-const { Track } = require('./music/track');
+const playerController = require('../music/playerController');
+const { Track } = require('../music/track');
 const { getTrackData, getMultipleTrackData, getPlaylistData, getSpotifyTrack, getSpotifyPlaylist } = require('../utils/apis.js');
 const { isYoutubePlaylist, isSpotify, isSpotifyTrack, isSpotifyPlaylist } = require('../utils/regexp');
 const pLimit = require('p-limit');
@@ -44,6 +44,8 @@ module.exports = {
                 }
                 await playerController.play(final, interaction);
             } else {
+                // might cause problems
+                // if (id) video = await getTrackData(id); else video = await getTrackData(string);
                 const video = await getTrackData(string);
                 const final = {
                     name: `1 Track`,
