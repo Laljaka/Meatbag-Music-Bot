@@ -55,7 +55,7 @@ module.exports = {
 					.addOptions(components),
 			);
 
-		    await interaction.editReply({ content: 'Please choose a song to play', components: [row] });
+		    await interaction.editReply({ components: [row] });
 
             const collector = interaction.channel.createMessageComponentCollector({ time: 30*1000 });
             let isReplied = false;

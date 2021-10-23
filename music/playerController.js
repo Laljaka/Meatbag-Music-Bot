@@ -7,6 +7,7 @@ const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 const { MessageEmbed, Interaction } = require('discord.js');
 const { Track } = require('./track');
+const { shuffle } = require('../utils/utils');
 
 // const subscriptions = new Map();
 
@@ -114,10 +115,23 @@ async function jump(interaction, number) {
     } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
 }
 
+async function shuffleQueue(interaction) {
+    const subscription = interaction.client.subscriptions.get(interaction.guildId);
+    if (subscription) {
+        if (!subscription.queueLock) {
+            subscription.queueLock = true;
+            shuffle(subscription.queue);
+            subscription.queueLock = false;
+            await interaction.reply('Shuffled!');
+        }
+    } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
+}
+
 module.exports = {
     play,
     skip,
     queue,
     leave,
-    jump
+    jump,
+    shuffleQueue
 }

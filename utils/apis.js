@@ -2,7 +2,9 @@ const ytsr = require('ytsr');
 const ytpl = require('ytpl');
 const SpotifyWebApi = require('spotify-web-api-node');
 const { isYoutubeTrack } = require('./regexp');
+const dotenv = require('dotenv');
 
+dotenv.config();
 
 class GoodSpotifyWebApi extends SpotifyWebApi {
     constructor(options) {
@@ -26,8 +28,8 @@ class GoodSpotifyWebApi extends SpotifyWebApi {
 
 
 const spotify = new GoodSpotifyWebApi({
-    clientId: '8cf20745c9164fc38fc928e911f7969f',
-    clientSecret: '1799a9145bd94a3895853735f7eda5dd'
+    clientId: process.env.SPOTIFYID,
+    clientSecret: process.env.SPOTIFYSECRET
 });
 
 spotify.update();
@@ -37,6 +39,8 @@ spotify.update();
  * 
  * @param { String } string 
  */
+
+//TODO EXTRACT VIDEO ID FROM EVERY URL
 async function getTrackData(string) {
     // const filters = await ytsr.getFilters(string);
     // const filter = filters.get('Type').get('Video');

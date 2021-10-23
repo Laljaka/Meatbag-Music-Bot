@@ -1,10 +1,10 @@
 module.exports = {
 	name: 'interactionCreate',
-	async execute(interaction, client) {
+	async execute(interaction) {
         if (interaction.isCommand()) {
 
             // console.log(`${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`);
-            const command = client.commands.get(interaction.commandName);
+            const command = interaction.client.commands.get(interaction.commandName);
 
             if (!command) return;
 
@@ -23,7 +23,7 @@ module.exports = {
             }
         }
         if (interaction.isContextMenu()) {
-            const command = client.commands.get(interaction.commandName);
+            const command = interaction.client.commands.get(interaction.commandName);
 
             if (!command) return;
 

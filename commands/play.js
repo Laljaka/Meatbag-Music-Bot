@@ -73,7 +73,7 @@ module.exports = {
                 const data = await getSpotifyPlaylist(string);
                 // const title = data.body.items[0].track.artists[0].name + ' - ' + data.body.items[0].track.name;
                 const requests = [];
-                const limit = pLimit(3);
+                const limit = pLimit(5);
                 // const timeout = i => new Promise(resolve => setTimeout(() => resolve(i), i));
                 data.body.items.forEach(element => {
                     requests.push(limit(() => getTrackData(element.track.artists[0].name + ' ' + element.track.name)));
@@ -92,7 +92,7 @@ module.exports = {
                     track: tracks
                 }
                 await playerController.play(final, interaction);
-                // const response = await asyncPool(2, requests, timeout);
+            } else {
 
             }
         }
