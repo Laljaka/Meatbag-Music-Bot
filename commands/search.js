@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { getMultipleTrackData } = require('../utils/apis.js');
-const { Interaction, MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { MeatbagMessage, MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js');
 const { Track } = require('../music/track');
-const { isYoutubePlaylist } = require('../utils/regexp');
+const { isUrl } = require('../utils/regexp');
 const playerController = require('../music/playerController');
 
 module.exports = {
@@ -20,14 +20,14 @@ module.exports = {
 
     /**
      * 
-     * @param { Interaction } interaction 
+     * @param { MeatbagMessage } interaction 
      * @returns 
      */
     async execute(interaction) {
         if (!interaction.member.voice.channelId) return await interaction.reply('You need to be in the voice channel to use this command');
         const number = interaction.options.getInteger('amount');
         const string = interaction.options.getString('song');
-        if (isYoutubePlaylist(string)) return await interaction.reply({ content: 'Please use only song links or search requests for this command', ephemeral: true });
+        if (isUrl(string)) return await interaction.reply({ content: 'Links ar not allowed for this command, only search requests', ephemeral: true });
         if (number <= 0) return await interaction.reply({ content: 'Invalid number', ephemeral: true });
         else if (number > 10) return await interaction.reply({ content: `Yeah, try ${number*10} next time, that will be easy to read.`, ephemeral: true });
         else {
@@ -55,7 +55,7 @@ module.exports = {
 					.addOptions(components),
 			);
 
-		    await interaction.editReply({ components: [row] });
+		    await interaction.editReply({ content: '** **', components: [row] });
 
             const collector = interaction.channel.createMessageComponentCollector({ time: 30*1000 });
             let isReplied = false;
@@ -71,7 +71,7 @@ module.exports = {
                     }
                     isReplied = true;
                     // await interaction.deleteReply();
-                    await playerController.play(final, interaction);
+                    await playerController.run(final, interaction);
                 }
             })
     

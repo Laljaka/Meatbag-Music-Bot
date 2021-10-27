@@ -1,28 +1,111 @@
 const { MusicSubscription } = require('./subscription');
 const { joinVoiceChannel } = require('@discordjs/voice');
-// const ytdl = require('youtube-dl-exec');
-const ytdl = require('ytdl-core');
-// const yts = require('yt-search');
-// const ytsbetter = require('youtube-search-without-api-key');
-const ytsr = require('ytsr');
-const { MessageEmbed, MeatbagMessage } = require('discord.js');
-const { MeatbagInteraction } = require('discord.js');
+const { MessageEmbed, MeatbagMessage, MeatbagInteraction, Interaction } = require('discord.js');
 const { Track } = require('./track');
 const { shuffle } = require('../utils/utils');
+const { isYoutubePlaylist, isSpotify, isSpotifyTrack, isSpotifyPlaylist, isUrl, isSpotifyAulbum } = require('../utils/regexp');
+const { getTrackData, 
+    getSpotifyAlbum, 
+    getPlaylistData, 
+    getSpotifyTrack, 
+    getSpotifyPlaylist, 
+    getTrackDataById 
+} = require('../utils/apis.js');
 
-// const subscriptions = new Map();
-
-// function isUrl(s) {
-//     const regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
-//     return regexp.test(s);
-// }
 
 /**
  * 
  * @param {any} track
- * @param {MeatbagInteraction} interaction Discord Interaction
+ * @param {MeatbagInteraction | MeatbagMessage} interaction Discord Interaction
+ * @param {string} string
  */
-async function play(track, interaction) {
+
+async function play(interaction, string) {
+    if (!isUrl(string)) {
+        const video = await getTrackData(string);
+        const final = {
+            name: `1 Track`,
+            thumbnail: video.items[0].thumbnails[0].url,
+            title: video.items[0].title,
+            url: video.items[0].url,
+            track: [new Track(video.items[0].url, video.items[0].title, video.items[0].thumbnails[0].url, video.items[0].duration)],
+            }
+        await run(final, interaction);
+    } else {
+        if (!isSpotify(string)) {
+            if (isYoutubePlaylist(string)) {
+                const tracks = [];
+                const data = await getPlaylistData(string);
+                data.items.forEach(entry => {
+                    const track = new Track(entry.url, entry.title, entry.thumbnails[0].url, entry.duration);
+                    tracks.push(track);
+                });
+                const final = {
+                    name: data.items.length.toString().concat(' Tracks'),
+                    thumbnail: data.thumbnails[0].url,
+                    title: data.title,
+                    url: data.url,
+                    track: tracks,
+                }
+                await run(final, interaction);
+            } else {
+                const video = await getTrackDataById(string);
+                const final = {
+                    name: `1 Track`,
+                    thumbnail: video.items[0].thumbnails[0].url,
+                    title: video.items[0].title,
+                    url: video.items[0].url,
+                    track: [new Track(video.items[0].url, video.items[0].title, video.items[0].thumbnails[0].url, video.items[0].duration)],
+                    }
+                await run(final, interaction);
+            }
+        } else {
+            if (isSpotifyTrack(string)) {
+                const data = await getSpotifyTrack(string);
+                const title = data.body.artists[0].name + ' - ' + data.body.name;
+                const video = await getTrackData(title);
+                const final = {
+                    name: `1 Track`,
+                    thumbnail: data.body.album.images[0].url,
+                    title: title,
+                    url: data.body.external_urls.spotify,
+                    track: [new Track(video.items[0].url, video.items[0].title, data.body.album.images[0].url, video.items[0].duration)],
+                }
+                await run(final, interaction);
+            } else {
+                let data;
+                if (isSpotifyPlaylist(string)) data = await getSpotifyPlaylist(string);
+                else if (isSpotifyAulbum(string)) data = await getSpotifyAlbum(string);
+                // const title = data.body.items[0].track.artists[0].name + ' - ' + data.body.items[0].track.name;
+                // const requests = [];
+                // const limit = pLimit(5);
+                // const timeout = i => new Promise(resolve => setTimeout(() => resolve(i), i));
+                const tracks = [];
+                data.body.items.forEach(element => {
+                    const title = element.track.artists[0].name + ' ' + element.track.name;
+                    const track = new Track(null, title, null, null);
+                    tracks.push(track);
+                });
+                // const result = await Promise.all(requests);
+                const final = {
+                    name: tracks.length.toString() + ' Tracks',
+                    thumbnail: data.body.items[0].track.album.images[0].url,
+                    title: 'A Spotify playlist',
+                    url: string,
+                    track: tracks
+                }
+                await run(final, interaction);
+            }
+        }
+    }
+}
+
+/**
+ * 
+ * @param {any} track 
+ * @param {MeatbagInteraction | MeatbagMessage} interaction 
+ */
+async function run(track, interaction) {
     const channel = interaction.member.voice.channel;
     let subscription = interaction.client.subscriptions.get(channel.guild.id);
     if (!subscription) {
@@ -37,8 +120,12 @@ async function play(track, interaction) {
     }
 
     if (subscription.channelLock !== interaction.channelId) {
-        await interaction.deleteReply();
-        return await interaction.followUp({ content: `Please use the same channel as you did when the bot first joined the voice chat, which is <#${subscription.channelLock}>`, ephemeral: true });
+        if (interaction instanceof Interaction) {
+            await interaction.deleteReply();
+            return await interaction.followUp({ content: `Please use the same channel as you did when the bot first joined the voice chat, which is <#${subscription.channelLock}>`, ephemeral: true });
+        } else {
+            return await interaction.channel.send({ content: `Please use the same channel as you did when the bot first joined the voice chat, which is <#${subscription.channelLock}>` });
+        }
     }
     
     const embed = new MessageEmbed()
@@ -47,7 +134,9 @@ async function play(track, interaction) {
         .setThumbnail(track.thumbnail)
         .setDescription(`[${track.title}](${track.url})`);
         // .addField('Now playing', `[${info.videoDetails.title}](${info.videoDetails.video_url})`);
-    await interaction.editReply({ content: '\u200b', embeds: [embed], components: [] })
+    if (interaction instanceof Interaction) await interaction.editReply({ content: '\u200b', embeds: [embed], components: [] });
+    else await interaction.channel.send({ content: '\u200b', embeds: [embed], components: [] });
+    
     await subscription.enqueue(track.track);
     // subscription.emitter.once('destroyed', (guildId) => {
     //     interaction.client.subscriptions.delete(guildId);
@@ -150,5 +239,6 @@ module.exports = {
     queue,
     leave,
     jump,
-    shuffleQueue
+    shuffleQueue,
+    run
 }

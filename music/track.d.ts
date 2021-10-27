@@ -7,6 +7,6 @@ export class Track {
     public thumbnail: string;
     public duration: string;
 
-    public fetchMissingData(): void;
+    public fetchMissingData(): Promise<void>;
     public createAudioResourceW(): Promise<AudioResource>;
 }
