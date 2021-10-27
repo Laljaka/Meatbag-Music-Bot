@@ -23,7 +23,9 @@ module.exports = {
          * @param { Interaction } interaction 
          */
     async execute(interaction) {
-        await interaction.reply('Test message')
+        await interaction.reply('Test message');
+        const data = await getTrackData('scions and sinners ultima');
+        console.log(data);
         // console.log(isSpotifyTrack('https://open.spotify.com/playlist/37i9dQZEVXcXuUkbUY9cSY?si=04f7dbaa29874fcf'))
     }
 }

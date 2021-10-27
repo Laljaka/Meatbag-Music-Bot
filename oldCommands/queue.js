@@ -1,14 +1,14 @@
 const { Message } = require("discord.js")
-
+const playerController = require('../music/playerController');
 
 module.exports = {
-    name: 'ping',
-
+    name: 'queue',
+    aliases: '',
     /**
      * 
      * @param { Message } message 
      */
     async execute(message) {
-        await message.reply(`${message.client.ws.ping.toString()} ms`);
+        await playerController.queue(message);
     }
 }

@@ -1,7 +1,7 @@
 const ytsr = require('ytsr');
 const ytpl = require('ytpl');
 const SpotifyWebApi = require('spotify-web-api-node');
-const { isYoutubeTrack } = require('./regexp');
+const { matchYoutubeTrackId } = require('./regexp');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -40,14 +40,20 @@ spotify.update();
  * @param { String } string 
  */
 
-//TODO EXTRACT VIDEO ID FROM EVERY URL
+//TODO EXTRACT VIDEO ID FROM EVERY URL done?
 async function getTrackData(string) {
+    console.time('data')
     // const filters = await ytsr.getFilters(string);
     // const filter = filters.get('Type').get('Video');
-    let filter;
-    if (!isYoutubeTrack(string)) filter = 'https://www.youtube.com/results?search_query=' + string + '&sp=EgIQAQ%253D%253D';
-    else filter = string;
+    const filter = 'https://www.youtube.com/results?search_query=' + string + '&sp=EgIQAQ%253D%253D';
     const videos = await ytsr(filter, { limit: 1 });
+    console.timeEnd('data');
+    return videos;
+}
+
+async function getTrackDataById(string) {
+    // const filter = matchYoutubeTrackId(string);
+    const videos = await ytsr(string, { limit: 1 });
     return videos;
 }
 
@@ -92,7 +98,15 @@ async function getSpotifyPlaylist(string) {
     if (spotify.expired) await spotify.update();
     const match = /(?<=playlist\/)(.*)(?=\?)/;
     const result = string.match(match);
-    const data = await spotify.getPlaylistTracks(result[0], { limit: 20 });
+    const data = await spotify.getPlaylistTracks(result[0], { limit: 40 });
+    return data;
+}
+
+async function getSpotifyAlbum(string) {
+    if (spotify.expired) await spotify.update();
+    const match = /(?<=album\/)(.*)(?=\?)/;
+    const result = string.match(match);
+    const data = await spotify.getAlbumTracks(result[0], { limit: 40 });
     return data;
 }
 
@@ -101,5 +115,7 @@ module.exports = {
     getPlaylistData,
     getTrackData,
     getSpotifyTrack,
-    getSpotifyPlaylist
+    getSpotifyPlaylist,
+    getTrackDataById,
+    getSpotifyAlbum
 }

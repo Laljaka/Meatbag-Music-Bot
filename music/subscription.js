@@ -36,6 +36,7 @@ class MusicSubscription {
         // this.emitter = new EventEmitter();
         this.guildId = guildId;
         this.timeout;
+        this.retry = 0;
 
         this.voiceConnection.on('stateChange', async (_, newState) => {
             if (newState.status === VoiceConnectionStatus.Disconnected) {
@@ -134,15 +135,34 @@ class MusicSubscription {
 
         this.queueLock = true;
         this.currentlyPlaying = this.queue.shift();
+        if (!this.currentlyPlaying.url) await this.currentlyPlaying.fetchMissingData();
+        this.queueLock = false;
+        this.retry = 0;
+        await this.#tryPlay()
+    }
+
+    async #tryPlay() {
         try {
+            console.time('stream');
             const resource = await this.currentlyPlaying.createAudioResourceW();
             this.audioPlayer.play(resource);
-            this.queueLock = false;
+            console.timeEnd('stream');
         } catch (error) {
             console.log(error);
             console.log('skipped song cause of error');
-            this.queueLock = false;
-            return this.processQueue();
+            const embed = new MessageEmbed()
+                .setColor('RED')
+                .setTitle(`Error while trying to load song:`)
+                .setDescription(`[${this.currentlyPlaying.title}](${this.currentlyPlaying.url})`)
+                .setFooter((this.retry < 2) ? 'RETRYING' : 'OUT OF RETRY ATTEMPTS, SKIPPING');
+            this.client.channels.fetch(this.channelLock).then(channel => {
+                channel.send({ embeds: [embed] });
+            });
+            if (this.retry < 2) {
+                this.retry = this.retry + 1;
+                await this.#tryPlay();
+            }
+            else return this.processQueue();
         }
     }
 }
