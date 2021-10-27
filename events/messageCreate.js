@@ -19,7 +19,7 @@ module.exports = {
         if(!command) return;
 
         try {
-            await command.execute(message);
+            await command.execute(message, args);
         } catch(error) {
             console.error(error);
             await message.reply('There was an error while executing old command!');

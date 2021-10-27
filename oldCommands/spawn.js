@@ -1,12 +1,13 @@
-const { Message, MessageActionRow, MessageButton } = require("discord.js")
+const { MeatbagMessage, MessageActionRow, MessageButton } = require("discord.js")
 
 
 module.exports = {
     name: 'spawn',
-
+    aliases: ['spawn', 'player'],
+    description: 'Spawns a player controller',
     /**
      * 
-     * @param { Message } message 
+     * @param { MeatbagMessage } message 
      */
     async execute(message) {
         const row = new MessageActionRow()

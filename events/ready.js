@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { Client } = require('discord.js');
+const { MeatbagClient } = require('../structures/meatbagClient');
 
 module.exports = {
     name: 'ready',
@@ -7,7 +7,7 @@ module.exports = {
 
     /**
      * 
-     * @param { Client } client 
+     * @param { MeatbagClient } client 
      */
     execute(client) {
         // client.guilds.cache.get('290888160714686464').commands.set(commands);

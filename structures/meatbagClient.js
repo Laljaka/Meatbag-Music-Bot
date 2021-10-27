@@ -11,6 +11,7 @@ class MeatbagClient extends Client {
         this.commands = new Collection();
         this.oldCommands = new Collection();
         this.prefixes = new Collection();
+        // this.aliases = new Collection();
     }
 
     syncPrefixes() {

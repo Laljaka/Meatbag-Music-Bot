@@ -5,7 +5,7 @@ const ytdl = require('ytdl-core');
 // const yts = require('yt-search');
 // const ytsbetter = require('youtube-search-without-api-key');
 const ytsr = require('ytsr');
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MeatbagMessage } = require('discord.js');
 const { MeatbagInteraction } = require('discord.js');
 const { Track } = require('./track');
 const { shuffle } = require('../utils/utils');
@@ -56,7 +56,7 @@ async function play(track, interaction) {
 
 /**
  * 
- * @param {MeatbagInteraction} interaction Discord Interaction
+ * @param {MeatbagInteraction | MeatbagMessage} interaction Discord Interaction
  */
 async function skip(interaction) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
@@ -70,7 +70,7 @@ async function skip(interaction) {
 
 /**
  * 
- * @param {MeatbagInteraction} interaction 
+ * @param {MeatbagInteraction | MeatbagMessage} interaction 
  */
 async function leave(interaction) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
@@ -82,7 +82,7 @@ async function leave(interaction) {
 
 /**
  * 
- * @param {MeatbagInteraction} interaction Discord Interaction
+ * @param {MeatbagInteraction | MeatbagMessage} interaction Discord Interaction
  */
 async function queue(interaction) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
@@ -130,7 +130,7 @@ async function jump(interaction, number) {
 
 /**
  * 
- * @param {MeatbagInteraction} interaction 
+ * @param {MeatbagInteraction | MeatbagMessage} interaction 
  */
 async function shuffleQueue(interaction) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);

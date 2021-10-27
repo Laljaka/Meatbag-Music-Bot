@@ -2,7 +2,7 @@ import { MeatbagClient } from "./structures/meatbagClient";
 // import { Interaction, Message } from "discord.js";
 
 module 'discord.js' {
-    export class MeatbagInteraction extends Interaction {
+    export class MeatbagInteraction extends CommandInteraction {
         public readonly client: MeatbagClient;
     }
 

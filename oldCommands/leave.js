@@ -2,14 +2,15 @@ const { MeatbagMessage } = require("discord.js")
 const playerController = require('../music/playerController');
 
 module.exports = {
-    name: 'queue',
-    aliases: ['queue', 'q', 'list'],
-    description: 'Shows queue',
+    name: 'leave',
+    aliases: ['leave', 'l', 'dc', 'disconnect', 'exit'],
+    description: 'Leaves the voice chat and purges the queue',
+
     /**
      * 
      * @param { MeatbagMessage } message 
      */
     async execute(message) {
-        await playerController.queue(message);
+        await playerController.leave(message);
     }
 }

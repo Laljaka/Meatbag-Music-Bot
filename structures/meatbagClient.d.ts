@@ -6,6 +6,7 @@ export class MeatbagClient extends Client {
     public commands: Collection<string, any>;
     public oldCommands: Collection<string, any>;
     public prefixes: Collection<string, string>;
+    // public aliases: Collection<string, string[]>;
 
-    public syncPreixes(): void;
+    public syncPrefixes(): void;
 }

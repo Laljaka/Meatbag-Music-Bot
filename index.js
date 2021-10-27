@@ -43,6 +43,7 @@ for (const file of eventFiles) {
 for(const file of oldCommandFiles) {
     const oldCommand = require(`./oldCommands/${file}`)
     client.oldCommands.set(oldCommand.name, oldCommand)
+    // client.aliases.set(oldCommand.name, oldCommand)
 }
 
 client.login(process.env.TOKEN);
