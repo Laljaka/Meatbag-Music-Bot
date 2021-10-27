@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { Interaction, MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { MeatbagInteraction } = require('discord.js');
 const test = 'test';
 const playerController = require('../music/playerController');
 const { Track } = require('../music/track');
@@ -23,7 +24,7 @@ module.exports = {
                 .setRequired(true)),
         /**
          * 
-         * @param {Interaction} interaction 
+         * @param {MeatbagInteraction} interaction 
          */
     async execute(interaction) {
         if (!interaction.member.voice.channelId) return await interaction.reply('You need to be in the voice channel to use this command');

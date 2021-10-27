@@ -5,7 +5,8 @@ const ytdl = require('ytdl-core');
 // const yts = require('yt-search');
 // const ytsbetter = require('youtube-search-without-api-key');
 const ytsr = require('ytsr');
-const { MessageEmbed, Interaction } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
+const { MeatbagInteraction } = require('discord.js');
 const { Track } = require('./track');
 const { shuffle } = require('../utils/utils');
 
@@ -18,8 +19,8 @@ const { shuffle } = require('../utils/utils');
 
 /**
  * 
- * @param {} track 
- * @param {Interaction} interaction Discord Interaction
+ * @param {any} track
+ * @param {MeatbagInteraction} interaction Discord Interaction
  */
 async function play(track, interaction) {
     const channel = interaction.member.voice.channel;
@@ -52,9 +53,10 @@ async function play(track, interaction) {
     //     interaction.client.subscriptions.delete(guildId);
     // })
 }
+
 /**
  * 
- * @param {Interaction} interaction Discord Interaction
+ * @param {MeatbagInteraction} interaction Discord Interaction
  */
 async function skip(interaction) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
@@ -66,6 +68,10 @@ async function skip(interaction) {
     } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
 }
 
+/**
+ * 
+ * @param {MeatbagInteraction} interaction 
+ */
 async function leave(interaction) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
     if (subscription) {
@@ -73,9 +79,10 @@ async function leave(interaction) {
         await interaction.reply('I left the voice channel!');
     } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
 }
+
 /**
  * 
- * @param {Interaction} interaction Discord Interaction
+ * @param {MeatbagInteraction} interaction Discord Interaction
  */
 async function queue(interaction) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
@@ -97,8 +104,14 @@ async function queue(interaction) {
     } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
 }
 
+/**
+ * 
+ * @param {MeatbagInteraction} interaction 
+ * @param {BigInt} number 
+ */
 async function jump(interaction, number) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
+    const a = 2
     if (subscription) {
         if (number <= 1 || number > subscription.queue.lenght) return await interaction.reply({ content: 'Provided number is out of range', ephemeral: true });
         else if (number === 2) {
@@ -115,6 +128,10 @@ async function jump(interaction, number) {
     } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
 }
 
+/**
+ * 
+ * @param {MeatbagInteraction} interaction 
+ */
 async function shuffleQueue(interaction) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
     if (subscription) {

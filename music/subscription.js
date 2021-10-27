@@ -16,13 +16,16 @@ const ytdlc = require('ytdl-core');
 const { Track } = require('./track');
 // const { EventEmitter } = require('events');
 
+/**
+ * @type {import('./subscription').MusicSubscription}
+ */
 class MusicSubscription {
-    /**
-     * 
-     * @param {VoiceConnection} voiceConnection 
-     * @param {String} channelId
-     * @param {Client} client
-     */
+    // /**
+    //  * 
+    //  * @param {VoiceConnection} voiceConnection 
+    //  * @param {String} channelId
+    //  * @param {Client} client
+    //  */
     constructor(voiceConnection, channelId, guildId, client) {
         this.voiceConnection = voiceConnection;
         this.audioPlayer = createAudioPlayer();
@@ -75,7 +78,7 @@ class MusicSubscription {
             if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
                 // this.currentlyPlaying = null;
                 this.isPlaying = false;
-                await this.processQueue()
+                await this.#processQueue()
             } else if (newState.status === AudioPlayerStatus.Playing) {
                 if (!this.isPlaying) {
                     this.isPlaying = true;
@@ -97,17 +100,17 @@ class MusicSubscription {
 
         voiceConnection.subscribe(this.audioPlayer);
     }
-    /**
-     * 
-     * @param { Track } track 
-     */
+    // /**
+    //  * 
+    //  * @param { Track } track 
+    //  */
     async enqueue(track) {
         this.queue = this.queue.concat(track);
         if (this.timeout) {
             clearTimeout(this.timeout);
             this.timeout = undefined;
         }
-        this.processQueue();
+        this.#processQueue();
     }
 
     stop() {
@@ -121,7 +124,7 @@ class MusicSubscription {
         this.client.subscriptions.delete(this.guildId);
     }
 
-    async processQueue() {
+    async #processQueue() {
         if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle) return;
         if (this.queue.length === 0) {
             this.currentlyPlaying = null;
@@ -138,7 +141,7 @@ class MusicSubscription {
         if (!this.currentlyPlaying.url) await this.currentlyPlaying.fetchMissingData();
         this.queueLock = false;
         this.retry = 0;
-        await this.#tryPlay()
+        this.#tryPlay()
     }
 
     async #tryPlay() {
@@ -160,9 +163,9 @@ class MusicSubscription {
             });
             if (this.retry < 2) {
                 this.retry = this.retry + 1;
-                await this.#tryPlay();
+                this.#tryPlay();
             }
-            else return this.processQueue();
+            else return this.#processQueue();
         }
     }
 }

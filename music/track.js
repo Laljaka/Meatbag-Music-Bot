@@ -8,6 +8,9 @@ dotenv.config()
 
 const COOKIE = process.env.COOKIE;
 
+/**
+ * @type {import('./track').Track}
+ */
 class Track {
     constructor(url, title, thumbnail, duration) {
         this.url = url;
