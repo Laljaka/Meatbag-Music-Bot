@@ -61,8 +61,9 @@ class Track {
             //-------------------------------------------------------------------------------
 
             const stream = ytdlc(this.url, {
-                highWaterMark: 1024*1024*32,
+                highWaterMark: 1024*1024*4,
                 // format: 'audioonly',
+                filter: 'audioonly',
                 quality: '251',
                 dlChunkSize: 0,
                 requestOptions: {

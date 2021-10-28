@@ -28,7 +28,7 @@ for (const file of commandFiles) {
 
 for (const file of contextFiles) {
     const context = require(`./context/${file}`);
-    client.commands.set(context.name, context);
+    client.commands.set(context.data.name, context);
 }
 
 for (const file of eventFiles) {

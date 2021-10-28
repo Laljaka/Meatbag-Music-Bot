@@ -4,7 +4,10 @@ const playerController = require('../music/playerController');
 module.exports = {
     name: 'queue',
     aliases: ['queue', 'q', 'list'],
-    description: 'Shows queue',
+    description: 'Shows the queue',
+    longDescription: 'Shows the queue',
+    usage: ' ',
+    
     /**
      * 
      * @param { MeatbagMessage } message 

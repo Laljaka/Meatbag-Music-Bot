@@ -1,12 +1,14 @@
 const { ContextMenuInteraction } = require('discord.js');
+const { ContextMenuCommandBuilder } = require('@discordjs/builders');
 const { getTrackData, getMultipleTrackData, getPlaylistData, getSpotifyTrack, getSpotifyPlaylist } = require('../utils/apis.js');
 const { isYoutubePlaylist, isSpotify, isSpotifyTrack, isSpotifyPlaylist } = require('../utils/regexp');
 const playerController = require('../music/playerController');
 const { Track } = require('../music/track');
 
 module.exports = {
-    name: 'Add to queue',
-    type: 3,
+    data: new ContextMenuCommandBuilder()
+        .setName('Add to queue')
+        .setType(3),
 
     /**
      * 
@@ -52,7 +54,7 @@ module.exports = {
         else {
             await interaction.deferReply();
             // might cause problems
-            await getTrackData(message.content);
+            const video = await getTrackData(message.content);
             const final = {
                 name: `1 Track`,
                 thumbnail: video.items[0].thumbnails[0].url,

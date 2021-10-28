@@ -5,6 +5,9 @@ module.exports = {
     name: 'spawn',
     aliases: ['spawn', 'player'],
     description: 'Spawns a player controller',
+    longDescription: 'Spawns a player controller',
+    usage: ' ',
+
     /**
      * 
      * @param { MeatbagMessage } message 

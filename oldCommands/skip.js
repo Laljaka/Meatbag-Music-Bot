@@ -4,7 +4,9 @@ const playerController = require('../music/playerController');
 module.exports = {
     name: 'skip',
     aliases: ['skip'],
-    description: 'Skips current song',
+    description: 'Skips current song in the queue',
+    longDescription: 'Skips current song in the queue',
+    usage: ' ',
 
     /**
      * 

@@ -195,24 +195,23 @@ async function queue(interaction) {
 
 /**
  * 
- * @param {MeatbagInteraction} interaction 
+ * @param {MeatbagInteraction | MeatbagMessage} interaction 
  * @param {BigInt} number 
  */
 async function jump(interaction, number) {
     const subscription = interaction.client.subscriptions.get(interaction.guildId);
-    const a = 2
     if (subscription) {
-        if (number <= 1 || number > subscription.queue.lenght) return await interaction.reply({ content: 'Provided number is out of range', ephemeral: true });
+        if (number <= 1 || number > subscription.queue.length + 1) return await interaction.reply({ content: 'Provided number is out of range', ephemeral: true });
         else if (number === 2) {
             subscription.audioPlayer.stop();
-            await interaction.reply({ content: 'Jumped to the next track, could\'ve just used skip', ephemeral: true });
+            await interaction.reply({ content: 'Jumped to the next track, could\'ve just used skip' });
         }
         else {
             subscription.queueLock = true;
             subscription.queue = subscription.queue.slice(number - 2);
             subscription.queueLock = false;
             subscription.audioPlayer.stop();
-            await interaction.reply({ content: `Jumped to position ${number}`, ephemeral: true });
+            await interaction.reply({ content: `Jumped to position ${number}` });
         }
     } else await interaction.reply({ content: 'I am not connected to a voice chat!', ephemeral: true });
 }

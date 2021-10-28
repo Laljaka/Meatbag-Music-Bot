@@ -16,7 +16,7 @@ for (const file of commandFiles) {
 
 for (const file of contextFiles) {
     const context = require(`./context/${file}`);
-    commands.push(context);
+    commands.push(context.data.toJSON());
 }
 
 const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);

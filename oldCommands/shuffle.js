@@ -5,6 +5,8 @@ module.exports = {
     name: 'shuffle',
     aliases: ['shuffle', 'mix'],
     description: 'Shuffles the queue',
+    longDescription: 'Shuffles the queue',
+    usage: ' ',
 
     /**
      * 

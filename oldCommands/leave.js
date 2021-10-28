@@ -5,6 +5,8 @@ module.exports = {
     name: 'leave',
     aliases: ['leave', 'l', 'dc', 'disconnect', 'exit'],
     description: 'Leaves the voice chat and purges the queue',
+    longDescription: 'Leaves the voice chat and purges the queue',
+    usage: ' ',
 
     /**
      * 
