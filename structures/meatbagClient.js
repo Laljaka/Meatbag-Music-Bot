@@ -1,4 +1,5 @@
 const { Client, Collection } = require('discord.js');
+const fs = require('fs');
 
 
 /**
@@ -13,7 +14,7 @@ class MeatbagClient extends Client {
         this.prefixes = new Collection();
         // this.aliases = new Collection();
     }
-
+    
     syncPrefixes() {
         let madeChanges = false;
         this.guilds.cache.forEach(guild => {
@@ -23,6 +24,13 @@ class MeatbagClient extends Client {
             }
         });
 
+        this.prefixes.forEach((_, key) => {
+            if (!this.guilds.cache.has(key)) {
+                this.prefixes.delete(key);
+                madeChanges = true;
+            }
+        });
+        
         if (madeChanges) {
             const data = JSON.stringify(Object.fromEntries(this.prefixes), null, 4);
             fs.writeFileSync('./storage/prefixes.json', data);

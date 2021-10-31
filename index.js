@@ -3,10 +3,11 @@ const { Intents } = require('discord.js');
 const dotenv = require('dotenv');
 const pjson = require('./package.json');
 const { MeatbagClient } = require('./structures/meatbagClient');
+const { type } = require('os');
 
 dotenv.config();
 
-const client = new MeatbagClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGES] });
+const client = new MeatbagClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS], presence: { status: 'idle', activities: [{name: 'my sanity crumble', type: 'WATCHING'}] }});
 
 const raw = fs.readFileSync('./storage/prefixes.json');
 const data = JSON.parse(raw);
