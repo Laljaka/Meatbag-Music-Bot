@@ -31,7 +31,6 @@
     "ffmpeg-static": "^4.4.0",
     "libsodium-wrappers": "^0.7.9",
     "spotify-web-api-node": "^5.0.2",
-    "youtube-dl-exec": "^1.2.14",
     "ytdl-core": "^4.9.1",
     "ytpl": "^2.2.3",
     "ytsr": "^3.5.3"

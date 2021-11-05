@@ -1,4 +1,4 @@
-const ytdl = require('youtube-dl-exec');
+// const ytdl = require('youtube-dl-exec');
 const ytdlc = require('ytdl-core');
 const { createAudioResource, StreamType } = require('@discordjs/voice');
 const { getTrackData } = require('../utils/apis');
