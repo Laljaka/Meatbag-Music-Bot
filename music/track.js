@@ -81,6 +81,7 @@ class Track {
             }
             stream.once('error', (error) => {
                 // console.log(`Oopsie ${error}`);
+                stream.destroy();
                 reject(error);
             })
 

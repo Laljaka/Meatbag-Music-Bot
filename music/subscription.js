@@ -159,6 +159,7 @@ class MusicSubscription {
             });
             if (this.retry < 2) {
                 this.retry = this.retry + 1;
+                await this.currentlyPlaying.fetchMissingData();
                 await this.#tryPlay();
             } else return await this.#processQueue();
         }
