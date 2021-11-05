@@ -14,7 +14,7 @@ module.exports = {
      */
     async execute(message) {
         if (!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return;
-        const reply = await message.reply(`This will activate slash commands in your guild.\nPlease follow this link and grant required permissions to the bot:\nhttps://discord.com/api/oauth2/authorize?client_id=796650236507324467&permissions=3459136&scope=bot%20applications.commands\n\nReact with \uD83D\uDFE9 when you gave the bot required permissions.\nReact with \uD83D\uDFE5 if you want to stop the process.`);
+        const reply = await message.reply(`This will activate slash commands in your guild.\nPlease follow this link and grant required permissions to the bot:\nhttps://discord.com/api/oauth2/authorize?client_id=801901284721819709&permissions=3459136&scope=bot%20applications.commands\n\nReact with \uD83D\uDFE9 when you gave the bot required permissions.\nReact with \uD83D\uDFE5 if you want to stop the process.`);
         await reply.react('\uD83D\uDFE9');
         await reply.react('\uD83D\uDFE5');
         const collector = reply.createReactionCollector({ time: 120*1000 })
