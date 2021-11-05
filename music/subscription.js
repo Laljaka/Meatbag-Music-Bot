@@ -11,7 +11,6 @@ const {
 	VoiceConnectionStatus,
 } = require('@discordjs/voice');
 const { Client, MessageEmbed } = require('discord.js');
-const ytdl = require('youtube-dl-exec');
 const ytdlc = require('ytdl-core');
 const { Track } = require('./track');
 // const { EventEmitter } = require('events');
