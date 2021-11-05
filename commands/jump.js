@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const playerController = require('../music/playerController');
+const { MeatbagInteraction } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,8 +9,13 @@ module.exports = {
             option.setName('to_position')
                 .setDescription('a position in queue to jump to')
                 .setRequired(true)),
+    
+    /**
+     * 
+     * @param { MeatbagInteraction } interaction 
+     */
     async execute(interaction) {
         const number = interaction.options.getInteger('to_position');
-        await playerController.jump(interaction, number);
+        await interaction.client.musicPlayer.jump(interaction, number);
     }
 }

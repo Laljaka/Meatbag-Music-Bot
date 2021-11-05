@@ -1,22 +1,24 @@
-const { Message } = require('discord.js');
+const { MeatbagMessage } = require('discord.js');
 
 module.exports = {
     name: 'messageCreate',
 
     /**
      * 
-     * @param { Message } message 
+     * @param { MeatbagMessage } message 
      */
     async execute(message) {
-        if (!message.member.id === '664704886444654613') return; // TESTING
         const prefix = message.client.prefixes.get(message.guildId);
         if (!message.content.startsWith(prefix) || message.author.bot) return;
 
         const args = message.content.slice(prefix.length).split(/ +/);
         const commandName = args.shift().toLowerCase();
-        const command = message.client.oldCommands.get(commandName);
+        let command = message.client.oldCommands.get(commandName);
 
-        if(!command) return;
+        if (!command) {
+            command = message.client.oldCommands.find(oldCommand => oldCommand.aliases.includes(commandName));
+            if (!command) return;
+        }
 
         try {
             await command.execute(message, args, prefix);

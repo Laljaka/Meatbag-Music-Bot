@@ -15,13 +15,13 @@ module.exports = {
                 await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
             }
         }
-        if (interaction.isButton()) {
-            if (interaction.customId === 'poggers') {
-                await interaction.reply({ content: 'You clicked Poggers', ephemeral: true});
-            } else if (interaction.customId === 'loggers') {
-                await interaction.reply({ content: 'You clicked Loggers', ephemeral: true});
-            }
-        }
+        // if (interaction.isButton()) {
+        //     if (interaction.customId === 'poggers') {
+        //         await interaction.reply({ content: 'You clicked Poggers', ephemeral: true});
+        //     } else if (interaction.customId === 'loggers') {
+        //         await interaction.reply({ content: 'You clicked Loggers', ephemeral: true});
+        //     }
+        // }
         if (interaction.isContextMenu()) {
             const command = interaction.client.commands.get(interaction.commandName);
 

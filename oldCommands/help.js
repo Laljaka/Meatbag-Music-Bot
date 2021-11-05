@@ -14,18 +14,23 @@ module.exports = {
         // const embed = new MessageEmbed();
         
         const secondCommandRaw = args.shift();
+        let finalString = '\`\`\`';
+        const numberOfSpaces = 25;
+        const space = ' ';
         if (secondCommandRaw) {
             const secondCommand = secondCommandRaw.toLowerCase();
             if (message.client.oldCommands.has(secondCommand)) {
                 const oldCommand = message.client.oldCommands.get(secondCommand);
-                embed.addField(prefix + oldCommand.aliases.join(' | ') + oldCommand.usage, oldCommand.longDescription);
-            }
+                finalString = finalString + `\n${prefix}${oldCommand.aliases.join('|')}${oldCommand.usage}\n\n${oldCommand.description}`;
+                // embed.addField(prefix + oldCommand.aliases.join(' | ') + oldCommand.usage, oldCommand.longDescription);
+            } else return await message.reply('Specified command does not exist.')
         } else {
             message.client.oldCommands.forEach(oldCommand => {
-                embed.addField(oldCommand.name, oldCommand.description);
+                finalString = finalString + `\n${oldCommand.name}${space.repeat(numberOfSpaces - oldCommand.name.length)}${oldCommand.description}`;
+                // embed.addField(oldCommand.name, oldCommand.description);
             });
         }
-
-        await message.reply({ embeds: [embed], allowedMentions: { repliedUser: false } });
+        finalString = finalString + `\n\nType ${prefix}help command for more info on a command.\n\`\`\``;
+        await message.reply({ content: finalString, allowedMentions: { repliedUser: false } });
     }
 }

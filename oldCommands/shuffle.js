@@ -1,5 +1,4 @@
 const { MeatbagMessage } = require("discord.js")
-const playerController = require('../music/playerController');
 
 module.exports = {
     name: 'shuffle',
@@ -13,6 +12,6 @@ module.exports = {
      * @param { MeatbagMessage } message 
      */
     async execute(message) {
-        await playerController.shuffleQueue(message);
+        await message.client.musicPlayer.shuffleQueue(message);
     }
 }

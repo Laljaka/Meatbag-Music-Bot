@@ -1,5 +1,4 @@
 const { MeatbagMessage } = require("discord.js")
-const playerController = require('../music/playerController');
 
 module.exports = {
     name: 'play',
@@ -14,6 +13,6 @@ module.exports = {
      */
     async execute(message, args) {
         const string = args.join(' ');
-        await playerController.play(message, string);
+        await message.client.musicPlayer.play(message, string);
     }
 }

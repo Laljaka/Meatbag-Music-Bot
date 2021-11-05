@@ -1,11 +1,16 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const playerController = require('../music/playerController');
+const { MeatbagInteraction } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('shuffle')
         .setDescription('Shuffles the queue'),
+
+    /**
+     * 
+     * @param { MeatbagInteraction } interaction 
+     */
     async execute(interaction) {
-        await playerController.shuffleQueue(interaction);
+        await interaction.client.musicPlayer.shuffleQueue(interaction);
     }
 }

@@ -1,11 +1,16 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const playerController = require('../music/playerController');
+const { MeatbagInteraction } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('leave')
         .setDescription('Leaves the voice chat and clears the queue'),
+
+    /**
+     * 
+     * @param { MeatbagInteraction } interaction 
+     */
     async execute(interaction) {
-        await playerController.leave(interaction);
+        await interaction.client.musicPlayer.leave(interaction);
     }
 }

@@ -1,12 +1,12 @@
 import { Client, Collection } from "discord.js";
-import { MusicSubscription } from "../music/subscription";
+import { MusicPlayer } from "../music/musicPlayer";
+
 
 export class MeatbagClient extends Client {
-    public subscriptions: Collection<string, MusicSubscription>;
     public commands: Collection<string, any>;
     public oldCommands: Collection<string, any>;
     public prefixes: Collection<string, string>;
-    // public aliases: Collection<string, string[]>;
+    public readonly musicPlayer: MusicPlayer;
 
     public syncPrefixes(): void;
 }

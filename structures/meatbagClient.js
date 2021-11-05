@@ -1,5 +1,6 @@
 const { Client, Collection } = require('discord.js');
 const fs = require('fs');
+const { MusicPlayer } = require('../music/musicPlayer');
 
 
 /**
@@ -8,11 +9,10 @@ const fs = require('fs');
 class MeatbagClient extends Client {
     constructor(options) {
         super(options);
-        this.subscriptions = new Collection();
         this.commands = new Collection();
         this.oldCommands = new Collection();
         this.prefixes = new Collection();
-        // this.aliases = new Collection();
+        this.musicPlayer = new MusicPlayer();
     }
     
     syncPrefixes() {

@@ -32,7 +32,7 @@ const spotify = new GoodSpotifyWebApi({
     clientSecret: process.env.SPOTIFYSECRET
 });
 
-spotify.update();
+// spotify.update();
 
 
 /**
@@ -42,12 +42,10 @@ spotify.update();
 
 //TODO EXTRACT VIDEO ID FROM EVERY URL done?
 async function getTrackData(string) {
-    console.time('data')
     // const filters = await ytsr.getFilters(string);
     // const filter = filters.get('Type').get('Video');
     const filter = 'https://www.youtube.com/results?search_query=' + string + '&sp=EgIQAQ%253D%253D';
     const videos = await ytsr(filter, { limit: 1 });
-    console.timeEnd('data');
     return videos;
 }
 

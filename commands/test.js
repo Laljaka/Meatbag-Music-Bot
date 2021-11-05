@@ -10,9 +10,9 @@ const ytsr = require('ytsr');
 const pLimit = require('p-limit');
 // import pLimit from 'p-limit';
 
-dotenv.config();
+// dotenv.config();
 
-const COOKIE = process.env.COOKIE;
+// const COOKIE = process.env.COOKIE;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,9 +23,12 @@ module.exports = {
          * @param { Interaction } interaction 
          */
     async execute(interaction) {
-        await interaction.reply('Test message');
-        const data = await getTrackData('scions and sinners ultima');
+        // await interaction.reply('Test message');
+        // const data = await getTrackData('scions and sinners ultima');
+        const data = parseInt('obama', 10);
+        // console.log(Number.isInteger(data));
         console.log(data);
+        console.log(typeof data);
         // console.log(isSpotifyTrack('https://open.spotify.com/playlist/37i9dQZEVXcXuUkbUY9cSY?si=04f7dbaa29874fcf'))
     }
 }

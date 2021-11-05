@@ -1,9 +1,8 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { getMultipleTrackData } = require('../utils/apis.js');
-const { MeatbagMessage, MessageEmbed, MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { MeatbagMessage, MessageEmbed, MessageActionRow, MessageSelectMenu, MeatbagInteraction } = require('discord.js');
 const { Track } = require('../music/track');
 const { isUrl } = require('../utils/regexp');
-const playerController = require('../music/playerController');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,7 +19,7 @@ module.exports = {
 
     /**
      * 
-     * @param { MeatbagMessage } interaction 
+     * @param { MeatbagInteraction } interaction 
      * @returns 
      */
     async execute(interaction) {
@@ -71,7 +70,7 @@ module.exports = {
                     }
                     isReplied = true;
                     // await interaction.deleteReply();
-                    await playerController.run(final, interaction);
+                    await interaction.client.musicPlayer.run(final, interaction);
                 }
             })
     

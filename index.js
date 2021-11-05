@@ -3,7 +3,6 @@ const { Intents } = require('discord.js');
 const dotenv = require('dotenv');
 const pjson = require('./package.json');
 const { MeatbagClient } = require('./structures/meatbagClient');
-const { type } = require('os');
 
 dotenv.config();
 

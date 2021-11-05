@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 
 dotenv.config()
 
-const COOKIE = process.env.COOKIE;
+// const COOKIE = process.env.COOKIE;
 
 /**
  * @type {import('./track').Track}
@@ -68,7 +68,7 @@ class Track {
                 dlChunkSize: 0,
                 requestOptions: {
                     headers: {
-                        cookie: COOKIE,
+                        cookie: process.env.COOKIE,
                     }
                 }
             });
@@ -80,7 +80,7 @@ class Track {
                 return;
             }
             stream.once('error', (error) => {
-                console.log(`Oopsie ${error}`);
+                // console.log(`Oopsie ${error}`);
                 reject(error);
             })
 

@@ -31,7 +31,7 @@ class MusicSubscription {
         this.audioPlayer = createAudioPlayer();
         this.queue = [];
         this.isPlaying = false;
-        this.queueLock = false;
+        // this.queueLock = false;
         this.readyLock = false;
         this.channelLock = channelId;
         this.client = client;
@@ -76,9 +76,9 @@ class MusicSubscription {
 
         this.audioPlayer.on('stateChange', async (oldState, newState) => {
             if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
-                // this.currentlyPlaying = null;
+                // if (this.queue.length === 0) this.currentlyPlaying = null;
                 this.isPlaying = false;
-                await this.#processQueue()
+                await this.#processQueue();
             } else if (newState.status === AudioPlayerStatus.Playing) {
                 if (!this.isPlaying) {
                     this.isPlaying = true;
@@ -110,24 +110,24 @@ class MusicSubscription {
             clearTimeout(this.timeout);
             this.timeout = undefined;
         }
-        this.#processQueue();
+        if (!this.currentlyPlaying) await this.#processQueue();
     }
 
     stop() {
-        this.queueLock = true;
+        // this.queueLock = true;
         this.queue = [];
         this.audioPlayer.stop(true);
         if (this.timeout) {
             clearTimeout(this.timeout);
             this.timeout = undefined;
         }
-        this.client.subscriptions.delete(this.guildId);
+        this.client.musicPlayer.subscriptions.delete(this.guildId);
     }
 
     async #processQueue() {
-        if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle) return;
-        if (this.queue.length === 0) {
-            this.currentlyPlaying = null;
+        this.currentlyPlaying = this.queue.shift();
+        // if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle) return;
+        if (!this.currentlyPlaying) {
             return this.timeout = setTimeout(() => {
                 this.client.channels.fetch(this.channelLock).then(channel => {
                     channel.send('I left the voice chat due to inactivity');
@@ -136,20 +136,17 @@ class MusicSubscription {
             }, 10*60*1000);
         }
 
-        this.queueLock = true;
-        this.currentlyPlaying = this.queue.shift();
+        // this.queueLock = true;
         if (!this.currentlyPlaying.url) await this.currentlyPlaying.fetchMissingData();
-        this.queueLock = false;
+        // this.queueLock = false;
         this.retry = 0;
-        this.#tryPlay()
+        await this.#tryPlay()
     }
 
     async #tryPlay() {
         try {
-            console.time('stream');
             const resource = await this.currentlyPlaying.createAudioResourceW();
             this.audioPlayer.play(resource);
-            console.timeEnd('stream');
         } catch (error) {
             console.log(error);
             console.log('skipped song cause of error');
@@ -163,9 +160,8 @@ class MusicSubscription {
             });
             if (this.retry < 2) {
                 this.retry = this.retry + 1;
-                this.#tryPlay();
-            }
-            else return this.#processQueue();
+                await this.#tryPlay();
+            } else return await this.#processQueue();
         }
     }
 }
