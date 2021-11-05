@@ -7,7 +7,6 @@ const { isPlaylist, isSpotifyTrack } = require('../utils/regexp');
 const { Track } = require('../music/track');
 const { getTrackData, getMultipleTrackData, getPlaylistData, getSpotifyTrack, getSpotifyPlaylist } = require('../utils/apis.js');
 const ytsr = require('ytsr');
-const pLimit = require('p-limit');
 // import pLimit from 'p-limit';
 
 // dotenv.config();
