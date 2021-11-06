@@ -1,4 +1,5 @@
-const { MeatbagMessage, Permissions, ApplicationCommandPermissionsManager } = require("discord.js")
+const { MeatbagMessage, Permissions, ApplicationCommandPermissionsManager } = require("discord.js");
+const fs = require('fs').promises;
 
 
 module.exports = {
@@ -40,6 +41,12 @@ module.exports = {
                     isReplied = true;
                     await reply.delete();
                     await message.channel.send(`Succesfully deployed slash commands to the guild!`);
+                    
+                    const raw = await fs.readFile('./storage/deployedGuilds.json');
+                    const data = JSON.parse(raw);
+                    if (!data.includes(message.guildId)) data.push(message.guildId);
+                    const exportData = JSON.stringify(data, null, 4);
+                    await fs.writeFile('./storage/deployedGuilds.json', exportData);
                 } else if (reaction.emoji.name == '\uD83D\uDFE5') {
                     isReplied = true;
                     await reply.delete();

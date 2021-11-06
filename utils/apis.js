@@ -50,8 +50,9 @@ async function getTrackData(string) {
 }
 
 async function getTrackDataById(string) {
-    // const filter = matchYoutubeTrackId(string);
-    const videos = await ytsr(string, { limit: 1 });
+    const filter = matchYoutubeTrackId(string);
+    const newFilter = 'https://www.youtube.com/results?search_query=' + filter + '&sp=EgIQAUICCAE%253D';
+    const videos = await ytsr(newFilter, { limit: 1 });
     return videos;
 }
 

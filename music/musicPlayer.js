@@ -67,7 +67,9 @@ class MusicPlayer {
                     }
                     await this.run(final, interaction);
                 } else {
+                    // console.log(string)
                     const video = await getTrackDataById(string);
+                    // console.log(video)
                     const final = {
                         name: `1 Track`,
                         thumbnail: video.items[0].thumbnails[0].url,

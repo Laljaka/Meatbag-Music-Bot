@@ -6,7 +6,7 @@ const { MeatbagClient } = require('./structures/meatbagClient');
 
 dotenv.config();
 
-const client = new MeatbagClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS], presence: { status: 'idle', activities: [{name: 'my sanity crumble', type: 'WATCHING'}] }});
+const client = new MeatbagClient({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS], presence: { status: 'online', activities: [{name: 'my sanity crumble', type: 'WATCHING'}] }});
 
 const raw = fs.readFileSync('./storage/prefixes.json');
 const data = JSON.parse(raw);
