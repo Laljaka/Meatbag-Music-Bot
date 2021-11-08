@@ -52,9 +52,11 @@ class MusicSubscription {
                         } catch (err) { console.log(err) }
                     // }
                 } else if (this.voiceConnection.rejoinAttempts < 5) {
-                    await wait((this.voiceConnection.rejoinAttempts + 1) * 5_000);
+                    // await wait((this.voiceConnection.rejoinAttempts + 1) * 5_000);           // FIX
+                    this.voiceConnection.rejoinAttempts = this.voiceConnection.rejoinAttempts + 1;
                     this.voiceConnection.rejoin();
                 } else {
+                    this.voiceConnection.rejoinAttempts = 0
                     this.voiceConnection.destroy();
                     // this.emitter.emit('destroyed');
                 }
