@@ -23,8 +23,12 @@ module.exports = {
         try {
             await command.execute(message, args, prefix);
         } catch(error) {
-            console.error(error);
-            await message.reply('There was an error while executing old command!');
+            try {
+                console.error(error);
+                await message.reply('There was an error while executing old command!');
+            } catch(err) {
+                console.error(err);
+            }
         }
     }
 }

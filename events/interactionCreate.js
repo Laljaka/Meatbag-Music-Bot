@@ -19,9 +19,13 @@ module.exports = {
             try {
                 await command.execute(interaction);
             } catch(error) {
-                console.error(error);
-                if (interaction.deferred || interaction.replied) await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
-                else await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+                try {
+                    console.error(error);
+                    if (interaction.deferred || interaction.replied) await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
+                    else await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+                } catch(err) {
+                    console.error(err);
+                }
             }
         }
         // if (interaction.isButton()) {
