@@ -12,6 +12,9 @@ const { getTrackData,
     getTrackDataById 
 } = require('../utils/apis.js');
 const ytdl = require('ytdl-core');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 /**
  * @type {import('./musicPlayer').MusicPlayer}
@@ -70,7 +73,7 @@ class MusicPlayer {
                 } else {
                     // console.log(string)
                     // const video = await getTrackDataById(string);
-                    const video = await ytdl.getBasicInfo(string);
+                    const video = await ytdl.getBasicInfo(string, { requestOptions: { headers: { cookie: process.env.COOKIE } } });
                     const minutes = Math.floor(video.videoDetails.lengthSeconds / 60);
                     const seconds = video.videoDetails.lengthSeconds - minutes * 60;
                     // console.log(video)
