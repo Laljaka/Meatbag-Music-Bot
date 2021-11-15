@@ -198,7 +198,7 @@ class MusicPlayer {
     async queue(interaction) {
         const subscription = this.subscriptions.get(interaction.guildId);
         if (subscription) {
-            if (subscription.currentlyPlaying !== null) {
+            if (subscription.currentlyPlaying) {
                 const embed = new MessageEmbed()
                     .setColor('DARK_GOLD')
                     .setTitle('Queue')
