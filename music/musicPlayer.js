@@ -11,6 +11,7 @@ const { getTrackData,
     getSpotifyPlaylist, 
     getTrackDataById 
 } = require('../utils/apis.js');
+const ytdl = require('ytdl-core');
 
 /**
  * @type {import('./musicPlayer').MusicPlayer}
@@ -68,14 +69,17 @@ class MusicPlayer {
                     await this.run(final, interaction);
                 } else {
                     // console.log(string)
-                    const video = await getTrackDataById(string);
+                    // const video = await getTrackDataById(string);
+                    const video = await ytdl.getBasicInfo(string);
+                    const minutes = Math.floor(video.videoDetails.lengthSeconds / 60);
+                    const seconds = video.videoDetails.lengthSeconds - minutes * 60;
                     // console.log(video)
                     const final = {
                         name: `1 Track`,
-                        thumbnail: video.items[0].thumbnails[0].url,
-                        title: video.items[0].title,
-                        url: video.items[0].url,
-                        track: [new Track(video.items[0].url, video.items[0].title, video.items[0].thumbnails[0].url, video.items[0].duration)],
+                        thumbnail: video.videoDetails.thumbnails[0].url,
+                        title: video.videoDetails.title,
+                        url: video.videoDetails.video_url,
+                        track: [new Track(video.videoDetails.video_url, video.videoDetails.title, video.videoDetails.thumbnails[0].url, `${minutes}:${seconds}`)],
                         }
                     await this.run(final, interaction);
                 }
