@@ -132,7 +132,7 @@ class MusicSubscription {
         this.currentlyPlaying = this.queue.shift();
         // if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle) return;
         if (!this.currentlyPlaying) {
-            return this.timeout = setTimeout(() => {
+            return this.timeout = setTimeout( async () => {
                 try {
                     const channel = await this.client.channels.fetch(this.channelLock);
                     await channel.send('I left the voice chat due to inactivity');
