@@ -89,9 +89,12 @@ class MusicSubscription {
                         .setTitle(`Now Playing ${this.currentlyPlaying.duration}`)
                         .setThumbnail(this.currentlyPlaying.thumbnail)
                         .setDescription(`[${this.currentlyPlaying.title}](${this.currentlyPlaying.url})`);
-                    this.client.channels.fetch(this.channelLock).then(channel => {
-                        channel.send({ embeds: [embed] });
-                    });
+                    try {
+                        const channel = await this.client.channels.fetch(this.channelLock);
+                        await channel.send({ embeds: [embed] });
+                    } catch (error) {
+                        console.log(error);
+                    }
                     // }
                 }
             }
@@ -130,9 +133,12 @@ class MusicSubscription {
         // if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle) return;
         if (!this.currentlyPlaying) {
             return this.timeout = setTimeout(() => {
-                this.client.channels.fetch(this.channelLock).then(channel => {
-                    channel.send('I left the voice chat due to inactivity');
-                });
+                try {
+                    const channel = await this.client.channels.fetch(this.channelLock);
+                    await channel.send('I left the voice chat due to inactivity');
+                } catch (error) {
+                    console.log(error);
+                }
                 this.voiceConnection.destroy();
             }, 10*60*1000);
         }
@@ -156,9 +162,12 @@ class MusicSubscription {
                 .setTitle(`Error while trying to load song:`)
                 .setDescription(`[${this.currentlyPlaying.title}](${this.currentlyPlaying.url})`)
                 .setFooter((this.retry < 2) ? 'RETRYING' : 'OUT OF RETRY ATTEMPTS, SKIPPING');
-            this.client.channels.fetch(this.channelLock).then(channel => {
-                channel.send({ embeds: [embed] });
-            });
+            try {
+                const channel = await this.client.channels.fetch(this.channelLock);
+                await channel.send({ embeds: [embed] });
+            } catch (err) {
+                console.log(err);
+            }
             if (this.retry < 2) {
                 this.retry = this.retry + 1;
                 await this.currentlyPlaying.fetchMissingData();
