@@ -171,14 +171,21 @@ class MusicPlayer {
     /**
      * 
      * @param {MeatbagInteraction | MeatbagMessage} interaction 
+     * @param { BigInt } number
      */
-    async skip(interaction) {
+    async skip(interaction, number) {
         const subscription = this.subscriptions.get(interaction.guildId);
         if (subscription) {
             if (!subscription.isPlaying) return await interaction.reply(this.replyBuilder(interaction, 'I am not playing anything or you are using this command while next track is loading'));
             // subscription.isPlaying = false;
-            subscription.audioPlayer.stop();
-            await interaction.reply('Skipped!');
+            if (!number || number === 1) {
+                subscription.audioPlayer.stop();
+                await interaction.reply('Skipped current song!');
+            } else {
+                if (number < 1 || number > subscription.queue.length + 1) return await interaction.reply(this.replyBuilder(interaction, 'Provided number is out of range'));
+                subscription.queue.splice(number - 2, 1);
+                await interaction.reply(this.replyBuilder(interaction, `Removed song number ${number} from the queue!`));
+            }
         } else await interaction.reply(this.replyBuilder(interaction, 'I am not connected to a voice chat!'));
     }
 
