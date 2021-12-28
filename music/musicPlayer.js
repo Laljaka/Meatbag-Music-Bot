@@ -99,21 +99,18 @@ class MusicPlayer {
                         track: [new Track(video.items[0].url, video.items[0].title, data.body.album.images[0].url, video.items[0].duration)],
                     }
                     await this.run(final, interaction);
-                } else {
-                    let data;
-                    if (isSpotifyPlaylist(string)) data = await getSpotifyPlaylist(string);
-                    else if (isSpotifyAulbum(string)) data = await getSpotifyAlbum(string);
-                    // const title = data.body.items[0].track.artists[0].name + ' - ' + data.body.items[0].track.name;
-                    // const requests = [];
-                    // const limit = pLimit(5);
-                    // const timeout = i => new Promise(resolve => setTimeout(() => resolve(i), i));
+                } else if (isSpotifyPlaylist(string)) {
+                    const data = await getSpotifyPlaylist(string)
+
                     const tracks = [];
+                    console.log(data.body.items)
+
                     data.body.items.forEach(element => {
                         const title = element.track.artists[0].name + ' ' + element.track.name;
                         const track = new Track(null, title, null, null);
                         tracks.push(track);
                     });
-                    // const result = await Promise.all(requests);
+
                     const final = {
                         name: tracks.length.toString() + ' Tracks',
                         thumbnail: data.body.items[0].track.album.images[0].url,
@@ -122,7 +119,35 @@ class MusicPlayer {
                         track: tracks
                     }
                     await this.run(final, interaction);
-                }
+                        
+                    // const title = data.body.items[0].track.artists[0].name + ' - ' + data.body.items[0].track.name;
+                    // const requests = [];
+                    // const limit = pLimit(5);
+                    // const timeout = i => new Promise(resolve => setTimeout(() => resolve(i), i));
+                    
+                    // const result = await Promise.all(requests);
+                    
+                } else if (isSpotifyAulbum(string)) {
+                    const data = await getSpotifyAlbum(string);
+
+                    const tracks = [];
+                    console.log(data.body.items)
+
+                    data.body.items.forEach(element => {
+                        const title = element.artists[0].name + ' ' + element.name;
+                        const track = new Track(null, title, null, null);
+                        tracks.push(track);
+                    });
+
+                    const final = {
+                        name: tracks.length.toString() + ' Tracks',
+                        thumbnail: null,
+                        title: 'A Spotify album',
+                        url: string,
+                        track: tracks
+                    }
+                    await this.run(final, interaction);
+                } 
             }
         }
     }
