@@ -17,6 +17,7 @@ export class MusicSubscription {
     public guildId: string;
     public timeout: NodeJS.Timeout;
     public retry: number;
+    public onLoop: boolean;
 
     public async enqueue(track: Track): Promise<void>; 
 }

@@ -11,5 +11,6 @@ export class MusicPlayer {
     public async jump(interaction: MeatbagInteraction | MeatbagMessage, number: BigInt): Promise<void>;
     public async shuffleQueue(interaction: MeatbagInteraction | MeatbagMessage): Promise<void>;
     public async stop(interaction: MeatbagInteraction | MeatbagMessage): Promise<void>;
+    public async loop(interaction: MeatbagInteraction | MeatbagMessage): Promise<void>;
     private replyBuilder(interaction: MeatbagInteraction | MeatbagMessage, content: string): {};
 }

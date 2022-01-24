@@ -10,7 +10,7 @@ const {
     StreamType,
 	VoiceConnectionStatus,
 } = require('@discordjs/voice');
-const { Client, MessageEmbed } = require('discord.js');
+const { Client, MessageEmbed, EmbedFooterData } = require('discord.js');
 const ytdlc = require('ytdl-core');
 const { Track } = require('./track');
 // const { EventEmitter } = require('events');
@@ -39,6 +39,7 @@ class MusicSubscription {
         this.guildId = guildId;
         this.timeout;
         this.retry = 0;
+        this.onLoop = false;
 
         this.voiceConnection.on('stateChange', async (_, newState) => {
             if (newState.status === VoiceConnectionStatus.Disconnected) {
@@ -129,7 +130,7 @@ class MusicSubscription {
     }
 
     async #processQueue() {
-        this.currentlyPlaying = this.queue.shift();
+        if (!this.onLoop) this.currentlyPlaying = this.queue.shift();
         // if (this.queueLock || this.audioPlayer.state.status !== AudioPlayerStatus.Idle) return;
         if (!this.currentlyPlaying) {
             return this.timeout = setTimeout( async () => {

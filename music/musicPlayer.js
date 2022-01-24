@@ -201,6 +201,7 @@ class MusicPlayer {
     async skip(interaction, number) {
         const subscription = this.subscriptions.get(interaction.guildId);
         if (subscription) {
+            subscription.onLoop = false;
             if (!subscription.isPlaying) return await interaction.reply(this.replyBuilder(interaction, 'I am not playing anything or you are using this command while next track is loading'));
             // subscription.isPlaying = false;
             if (!number || number === 1) {
@@ -258,6 +259,7 @@ class MusicPlayer {
     async jump(interaction, number) {
         const subscription = this.subscriptions.get(interaction.guildId);
         if (subscription) {
+            subscription.onLoop = false;
             if (!subscription.isPlaying) return await interaction.reply(this.replyBuilder(interaction, 'I am not playing anything or you are using this command while next track is loading'));
             if (number <= 1 || number > subscription.queue.length + 1) return await interaction.reply(this.replyBuilder(interaction, 'Provided number is out of range'));
             else if (number === 2) {
@@ -281,6 +283,7 @@ class MusicPlayer {
     async shuffleQueue(interaction) {
         const subscription = this.subscriptions.get(interaction.guildId);
         if (subscription) {
+            subscription.onLoop = false;
             if (subscription.queue.length > 1) {
                 // subscription.queueLock = true;
                 shuffle(subscription.queue);
@@ -302,7 +305,21 @@ class MusicPlayer {
             subscription.queue = [];
             // subscription.queueLock = false;
             subscription.audioPlayer.stop();
+            subscription.onLoop = false;
+            await interaction.reply("I have stopped the playback and cleared the queue!")
         } else await interaction.reply(this.replyBuilder(interaction, 'I am not connected to a voice chat!'));
+    }
+
+    /**
+     * 
+     * @param {MeatbagInteraction | MeatbagMessage} interaction
+     */
+    async loop(interaction) {
+        const subscription = this.subscriptions.get(interaction.guildId);
+        if (!subscription) return await interaction.reply(this.replyBuilder(interaction, 'I am not connected to a voice chat!'));
+        if (!subscription.isPlaying) return await interaction.reply(this.replyBuilder(interaction, 'I am not playing anything or switching to another track!'));
+        subscription.onLoop = !subscription.onLoop;
+        await interaction.reply(this.replyBuilder(interaction, `Repeat mode: ${subscription.onLoop.toString()}.`));
     }
 }
 
